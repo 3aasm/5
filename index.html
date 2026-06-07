@@ -203,8 +203,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh; /* لدعم الهواتف الحديثة بدقة */
             margin: 0;
+            overflow: hidden; /* لمنع تحريك الشاشة بالكامل */
         }
 
         #app-container {
@@ -367,20 +369,19 @@
             <!-- 2. شاشة المهام (Tasks) -->
             <section id="view-tasks" class="p-6 hidden h-full flex flex-col relative">
                 <div class="flex justify-between items-start mb-6">
-                    <div class="flex gap-2">
-                        <!-- تم نقل الزر إلى شريط التنقل السفلي -->
-                    </div>
-                    <!-- العنوان -->
-                    <div class="text-center">
-                        <h2 class="text-2xl font-bold">مهام اليوم</h2>
-                        <p class="text-textMuted text-sm mt-1" id="current-date-text"></p>
-                    </div>
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 w-10">
                         <!-- زر الأرشيف -->
                         <button onclick="navigate('archive')"
                             class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-all duration-300">
                             <i class="fa-solid fa-box-archive"></i>
                         </button>
+                    </div>
+                    <!-- العنوان -->
+                    <div class="text-center flex-1">
+                        <h2 class="text-2xl font-bold">مهام اليوم</h2>
+                        <p class="text-textMuted text-sm mt-1" id="current-date-text"></p>
+                    </div>
+                    <div class="flex gap-2 w-10 justify-end">
                         <!-- زر الفلترة/التصنيف -->
                         <button onclick="cycleTaskFilter()"
                             class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-all duration-300 relative overflow-hidden"
@@ -877,14 +878,14 @@
                     </div>
                 </div>
 
-                <button onclick="navigate('stats')"
-                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="stats">
-                    <i class="fa-solid fa-chart-simple text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
-                </button>
-
                 <button onclick="navigate('options')"
                     class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="options">
                     <i class="fa-solid fa-layer-group text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                </button>
+
+                <button onclick="navigate('stats')"
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="stats">
+                    <i class="fa-solid fa-chart-simple text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
                 </button>
 
             </div>
