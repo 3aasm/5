@@ -1,0 +1,2305 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منظم المهام اليومية</title>
+    <!-- استدعاء Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- استدعاء خط Cairo و Tajawal -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap"
+        rel="stylesheet">
+    <!-- استدعاء FontAwesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- استدعاء Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- استدعاء Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bgDark: '#1A1A1A',      /* لون الخلفية الأساسي */
+                        cardDark: '#252525',    /* لون البطاقات */
+                        cardLighter: '#2E2E2E', /* لون فاتح قليلاً للعناصر الداخلية */
+                        accentPurp: '#9B8AF4',  /* البنفسجي المميّز */
+                        accentPurpDark: '#7A68D8',
+                        accentGreen: '#88EDAA', /* الأخضر المميّز */
+                        accentOrange: '#EDB188',/* البرتقالي المميّز */
+                        textMain: '#FFFFFF',
+                        textMuted: '#9CA3AF',
+                        borderDark: '#333333'
+                    },
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                        numbers: ['Cairo', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(155, 138, 244, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* إخفاء شريط التمرير مع الحفاظ على إمكانية التمرير */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* تأثيرات النقر والحركة */
+        .tap-effect:active {
+            transform: scale(0.96);
+        }
+
+        .transition-all-fast {
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* حاوية التطبيق لشاشات الكمبيوتر لتبدو كالهاتف */
+        .hourglass-flow {
+            background-size: 100% 50%;
+            background-repeat: repeat-y;
+            animation: flowDown var(--flow-duration, 5s) linear infinite;
+        }
+
+        /* أنميشن الصح المنجز */
+        @keyframes checkmark-pop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.4);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .custom-checkbox.checked i {
+            display: block;
+            color: white;
+            font-size: 12px;
+            animation: checkmark-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* ستايل القائمة المنسدلة المخصصة */
+        .custom-select-options {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background-color: #1A1A1A;
+            border: 1px solid #333;
+            border-radius: 16px;
+            margin-bottom: 8px;
+            overflow: hidden;
+            z-index: 70;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .custom-select-options.show {
+            display: block;
+            animation: slideUpFade 0.2s ease-out;
+        }
+
+        @keyframes slideUpFade {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .custom-option {
+            padding: 10px 15px;
+            font-size: 13px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .custom-option:hover {
+            background-color: #2E2E2E;
+        }
+
+        /* أنميشن الظهور السريع */
+        @keyframes fastFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-fast-fade-in {
+            animation: fastFadeIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Onboarding Styles */
+        #onboarding-overlay {
+            z-index: 100;
+        }
+
+        .onboard-step {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .onboard-step.active {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .interest-btn {
+            border: 2px solid #333;
+            transition: all 0.3s;
+        }
+
+        .interest-btn.selected {
+            border-color: #9B8AF4;
+            background-color: rgba(155, 138, 244, 0.2);
+            color: white;
+        }
+
+        .level-btn {
+            border: 2px solid #333;
+            transition: all 0.3s;
+        }
+
+        .level-btn.selected {
+            border-color: #88EDAA;
+            background-color: rgba(136, 237, 170, 0.2);
+            color: white;
+        }
+
+        body {
+            background-color: #0f0f0f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        #app-container {
+            width: 100%;
+            height: 100vh;
+            max-width: 480px;
+            background-color: #1A1A1A;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 481px) {
+            #app-container {
+                height: 90vh;
+                border-radius: 40px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                border: 8px solid #2a2a2a;
+            }
+        }
+
+        /* Checkbox مخصص */
+        .custom-checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .custom-checkbox.checked {
+            background-color: #9B8AF4;
+            border-color: #9B8AF4;
+        }
+
+        .custom-checkbox i {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="text-textMain font-sans antialiased selection:bg-accentPurp selection:text-white">
+
+    <div id="app-container">
+
+        <!-- منطقة المحتوى الرئيسية (قابلة للتمرير) -->
+        <main id="main-content" class="flex-1 overflow-y-auto hide-scrollbar pb-24 relative">
+
+            <!-- 1. شاشة الرئيسية (Home) -->
+            <section id="view-home" class="p-6 hidden">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-12 h-12 rounded-full bg-cardDark border border-accentPurp flex items-center justify-center text-xl text-accentPurp shadow-glow relative">
+                            <i class="fa-solid fa-user" id="home-avatar-icon"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-white" id="home-user-name">ضيف</span>
+                            <span
+                                class="text-[10px] text-accentGreen bg-accentGreen/10 px-2 py-0.5 rounded-full w-fit mt-0.5 font-bold hidden"
+                                id="home-user-level"></span>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 text-xl text-textMuted">
+                        <button class="hover:text-white transition-colors" onclick="openSettings()"><i
+                                class="fa-solid fa-gear"></i></button>
+                    </div>
+                </div>
+
+                <!-- بطاقة الترحيب المطورة -->
+                <div
+                    class="bg-gradient-to-tl from-[#9B8AF4] via-[#8570E5] to-[#7A68D8] rounded-[28px] p-6 shadow-glow mb-8 relative overflow-hidden flex items-center justify-between border border-white/10 group">
+                    <!-- تأثيرات إضاءة في الخلفية -->
+                    <div
+                        class="absolute -left-12 -bottom-12 w-48 h-48 bg-white opacity-10 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700 pointer-events-none">
+                    </div>
+                    <div
+                        class="absolute right-0 top-0 w-32 h-32 bg-[#88EDAA] opacity-20 rounded-full blur-3xl mix-blend-overlay pointer-events-none">
+                    </div>
+
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <h2 class="text-2xl font-extrabold text-white tracking-tight" id="greeting-text">أهلاً بك
+                            </h2>
+                            <span class="text-2xl animate-pulse origin-bottom-right">👋</span>
+                        </div>
+                        <p class="text-white/90 text-[13px] font-medium leading-relaxed max-w-[180px]">اجعل يومك مليئاً
+                            بالإنجازات، خطوة بخطوة.</p>
+                    </div>
+
+                    <div
+                        class="relative z-10 shrink-0 w-14 h-14 bg-white/20 backdrop-blur-md rounded-[18px] flex items-center justify-center border border-white/30 shadow-[0_8px_16px_rgba(0,0,0,0.2)] rotate-[-8deg] group-hover:rotate-0 transition-all duration-300">
+                        <i class="fa-solid fa-rocket text-2xl text-white drop-shadow-lg"></i>
+                    </div>
+                </div>
+
+                <!-- واجهة المهام العشوائية (الحفرة والساعة الرملية) -->
+                <div class="flex gap-3 mb-6 h-[88px]">
+                    <!-- المستطيل الغائر (الحفرة) -->
+                    <div
+                        class="flex-1 bg-[#0e0e0e] rounded-[22px] shadow-[inset_0_8px_24px_rgba(0,0,0,0.9)] border border-white/5 flex flex-col justify-between p-3 relative overflow-hidden">
+                        <!-- شريط علوي -->
+                        <div class="flex items-center justify-between">
+                            <div
+                                class="flex items-center gap-1.5 text-[9px] font-semibold text-white/30 uppercase tracking-widest">
+                                <i class="fa-solid fa-shuffle text-[8px]"></i>
+                                <span>عشوائي</span>
+                            </div>
+                            <div id="random-priority-badge"
+                                class="hidden text-[8px] font-bold px-2 py-0.5 rounded-full"></div>
+                        </div>
+                        <!-- محتوى المهمة -->
+                        <div id="random-task-content"
+                            class="flex items-center gap-2.5 transition-all duration-500 opacity-0 transform translate-y-1">
+                            <!-- سيتم حقن المهمة هنا -->
+                        </div>
+                    </div>
+                    <!-- الساعة الرملية العمودية -->
+                    <div
+                        class="w-8 bg-[#121212] rounded-[20px] shadow-[inset_0_5px_15px_rgba(0,0,0,0.8)] border border-borderDark relative overflow-hidden flex flex-col justify-end p-1">
+                        <div id="hourglass-bar" class="w-full bg-accentPurp rounded-xl transition-all shadow-glow"
+                            style="height: 100%;"></div>
+                    </div>
+                </div>
+
+                <!-- ملخص اليوم -->
+                <div class="bg-cardDark rounded-3xl p-6 mb-6 flex flex-col items-center">
+                    <h3 class="text-lg font-bold mb-4 text-center">إنجاز اليوم</h3>
+                    <!-- دائرة التقدم المصغرة -->
+                    <div class="relative w-32 h-32 flex items-center justify-center">
+                        <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+                            <circle cx="64" cy="64" r="56" stroke="#333" stroke-width="8" fill="none" />
+                            <circle id="home-progress-circle" cx="64" cy="64" r="56" stroke="#88EDAA" stroke-width="8"
+                                fill="none" stroke-dasharray="351" stroke-dashoffset="351" stroke-linecap="round"
+                                class="transition-all duration-1000 ease-out" />
+                        </svg>
+                        <div class="text-2xl font-bold font-numbers flex flex-col items-center">
+                            <span id="home-progress-text">0%</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex gap-6 text-sm text-center">
+                        <div>
+                            <span class="block text-textMuted">المتبقي</span>
+                            <span class="font-bold text-lg" id="home-tasks-left">0</span>
+                        </div>
+                        <div>
+                            <span class="block text-textMuted">المنجز</span>
+                            <span class="font-bold text-lg text-accentGreen" id="home-tasks-done">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. شاشة المهام (Tasks) -->
+            <section id="view-tasks" class="p-6 hidden h-full flex flex-col relative">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="flex gap-2">
+                        <!-- تم نقل الزر إلى شريط التنقل السفلي -->
+                    </div>
+                    <!-- العنوان -->
+                    <div class="text-center">
+                        <h2 class="text-2xl font-bold">مهام اليوم</h2>
+                        <p class="text-textMuted text-sm mt-1" id="current-date-text"></p>
+                    </div>
+                    <div class="flex gap-2">
+                        <!-- زر الأرشيف -->
+                        <button onclick="navigate('archive')"
+                            class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-all duration-300">
+                            <i class="fa-solid fa-box-archive"></i>
+                        </button>
+                        <!-- زر الفلترة/التصنيف -->
+                        <button onclick="cycleTaskFilter()"
+                            class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-all duration-300 relative overflow-hidden"
+                            id="task-filter-btn">
+                            <i class="fa-solid fa-filter transition-transform duration-300" id="task-filter-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- شريط الأيام الأفقي -->
+                <div class="flex overflow-x-auto hide-scrollbar gap-3 mb-6 pb-2" id="calendar-strip">
+                    <!-- سيتم تعبئته بالجافاسكربت -->
+                </div>
+
+                <!-- قائمة المهام -->
+                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24" id="tasks-list">
+                    <!-- سيتم تعبئته بالجافاسكربت -->
+                    <div class="text-center text-textMuted mt-10" id="empty-tasks-msg">
+                        <i class="fa-solid fa-clipboard-list text-4xl mb-3 opacity-50"></i>
+                        <p>لا توجد مهام مضافة لهذا اليوم.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- شاشة الخيارات (المزيد) -->
+            <section id="view-options" class="p-6 hidden h-full flex flex-col relative">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold">المزيد</h2>
+                    <p class="text-textMuted text-sm mt-1">خيارات إضافية للتطبيق</p>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <!-- خيار 1: ترتيب/تنظيم يومي -->
+                    <button onclick="navigate('daily-plan')"
+                        class="bg-cardDark rounded-3xl p-5 flex items-center justify-between border border-borderDark hover:border-accentOrange hover:bg-cardLighter transition-colors tap-effect group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-accentOrange/20 text-accentOrange flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-calendar-day"></i>
+                            </div>
+                            <div class="text-right">
+                                <h3 class="font-bold text-white text-[15px]">مخطط يومي</h3>
+                                <p class="text-[11px] text-textMuted mt-0.5">جدول مهامك بأوقات محددة</p>
+                            </div>
+                        </div>
+                        <div
+                            class="w-8 h-8 rounded-full bg-borderDark flex items-center justify-center text-textMuted group-hover:bg-accentOrange group-hover:text-bgDark transition-colors">
+                            <i class="fa-solid fa-chevron-left text-sm"></i>
+                        </div>
+                    </button>
+
+                    <!-- خيار 2: مفكراتي -->
+                    <button onclick="navigate('notes')"
+                        class="bg-cardDark rounded-3xl p-5 flex items-center justify-between border border-borderDark hover:border-accentGreen hover:bg-cardLighter transition-colors tap-effect group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-accentGreen/20 text-accentGreen flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+                            <div class="text-right">
+                                <h3 class="font-bold text-white text-[15px]">مفكراتي</h3>
+                                <p class="text-[11px] text-textMuted mt-0.5">سجل أفكارك وملاحظاتك</p>
+                            </div>
+                        </div>
+                        <div
+                            class="w-8 h-8 rounded-full bg-borderDark flex items-center justify-center text-textMuted group-hover:bg-accentGreen group-hover:text-bgDark transition-colors">
+                            <i class="fa-solid fa-chevron-left text-sm"></i>
+                        </div>
+                    </button>
+
+                    <!-- خيار 3: فضاء التركيز -->
+                    <button onclick="navigate('timer')"
+                        class="bg-cardDark rounded-3xl p-5 flex items-center justify-between border border-borderDark hover:border-accentPurp hover:bg-cardLighter transition-colors tap-effect group">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-accentPurp/20 text-accentPurp flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                <i class="fa-solid fa-stopwatch"></i>
+                            </div>
+                            <div class="text-right">
+                                <h3 class="font-bold text-white text-[15px]">فضاء التركيز</h3>
+                                <p class="text-[11px] text-textMuted mt-0.5">حدد وقتك وأنجز أكثر</p>
+                            </div>
+                        </div>
+                        <div
+                            class="w-8 h-8 rounded-full bg-borderDark flex items-center justify-center text-textMuted group-hover:bg-accentPurp group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-chevron-left text-sm"></i>
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- شاشة المخطط اليومي (Daily Plan) -->
+            <section id="view-daily-plan" class="p-6 hidden h-full flex flex-col relative">
+                <div class="flex justify-between items-center mb-6 w-full">
+                    <!-- العنوان وزر العودة -->
+                    <div class="flex items-center gap-3">
+                        <button onclick="navigateDailyPlanBack()"
+                            class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-colors hover:text-white hover:bg-cardLighter">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <h2 class="text-2xl font-bold">مخطط يومي</h2>
+                    </div>
+
+                    <!-- المؤقت المحسن -->
+                    <div class="flex items-center gap-2 bg-[#1A1A1A] border border-borderDark px-3 py-1.5 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
+                        <div class="w-8 h-8 rounded-xl bg-accentOrange/20 text-accentOrange flex items-center justify-center text-sm shadow-[0_0_10px_rgba(237,177,136,0.2)]">
+                            <i class="fa-solid fa-stopwatch animate-pulse"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[9px] text-textMuted font-bold leading-none mb-1 text-right">الوقت المتبقي</span>
+                            <span class="text-sm font-bold text-white font-numbers leading-none text-right" id="day-countdown">00:00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ترويسة الجدول -->
+                <div class="flex justify-between items-center text-textMuted text-xs px-2 mb-2 font-bold bg-cardDark/50 py-2 rounded-lg">
+                    <span class="w-6 text-center">✓</span>
+                    <span class="flex-1 text-right pr-2">المهمة</span>
+                    <span class="w-[80px] text-center">التوقيت</span>
+                    <span class="w-8"></span> <!-- للحذف -->
+                </div>
+
+                <!-- قائمة المخطط -->
+                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24 bg-cardDark/20 rounded-2xl p-2 border border-borderDark/50 relative flex flex-col gap-1" id="daily-plan-list">
+                    <!-- سيتم حقن المهام هنا -->
+                </div>
+
+                <!-- الشريط السفلي المخصص -->
+                <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] bg-cardDark/90 backdrop-blur-xl border border-white/10 p-2 z-40 rounded-full shadow-[0_15px_35px_rgba(0,0,0,0.5)] flex items-center gap-2">
+                    <button onclick="addDailyPlanTask()" class="flex-1 bg-accentOrange text-bgDark font-bold rounded-full py-3 tap-effect flex items-center justify-center gap-2 hover:bg-accentOrange/90 transition-colors">
+                        <i class="fa-solid fa-plus"></i> إضافة موعد
+                    </button>
+                    <div class="w-12 h-12 rounded-full bg-cardLighter border border-borderDark flex items-center justify-center text-textMuted shrink-0">
+                        <i class="fa-solid fa-calendar-day"></i>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. شاشة المؤقت (Focus/Timer) -->
+            <section id="view-timer" class="p-6 hidden h-full flex flex-col relative">
+                <div class="flex items-center gap-4 mb-6">
+                    <button onclick="navigate('options')"
+                        class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-colors hover:text-white">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <div class="text-center flex-1 pl-10">
+                        <h2 class="text-2xl font-bold">فضاء التركيز</h2>
+                        <p class="text-textMuted text-sm mt-1">حدد وقتك وأنجز أكثر</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center flex-1 pb-20">
+                    <!-- المؤقت الدائري الكبير -->
+                    <div class="relative w-72 h-72 flex items-center justify-center mb-12">
+                        <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+                            <circle cx="144" cy="144" r="130" stroke="#252525" stroke-width="10" fill="none" />
+                            <!-- المحيط = 2 * pi * 130 = ~816 -->
+                            <circle id="timer-ring" cx="144" cy="144" r="130" stroke="#9B8AF4" stroke-width="10"
+                                fill="none" stroke-dasharray="816.8" stroke-dashoffset="0" stroke-linecap="round"
+                                class="transition-all duration-1000 linear" />
+                        </svg>
+                        <div class="flex flex-col items-center">
+                            <div class="text-7xl font-bold font-numbers text-white tracking-widest" id="timer-display">
+                                25:00
+                            </div>
+                            <div class="text-accentPurp mt-2 font-bold" id="timer-mode-text">وقت العمل</div>
+                        </div>
+                    </div>
+
+                    <!-- أزرار التحكم -->
+                    <div class="flex items-center justify-center gap-6 w-full px-4">
+                        <button onclick="resetTimer()"
+                            class="w-14 h-14 rounded-full bg-cardDark text-textMuted hover:text-white flex items-center justify-center text-xl tap-effect transition-colors">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                        <button id="btn-start-timer" onclick="toggleTimer()"
+                            class="flex-1 py-4 rounded-full bg-accentPurp text-white font-bold text-xl shadow-glow tap-effect transition-transform flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play" id="timer-icon"></i>
+                            <span id="timer-btn-text">ابدأ</span>
+                        </button>
+                        <button onclick="switchTimerMode()"
+                            class="w-14 h-14 rounded-full bg-cardDark text-textMuted hover:text-white flex items-center justify-center text-xl tap-effect transition-colors">
+                            <i class="fa-solid fa-mug-hot"></i>
+                        </button>
+                    </div>
+
+                    <!-- خيارات الوقت -->
+                    <div class="flex justify-center gap-3 mt-10">
+                        <button onclick="setTimerDuration(25)"
+                            class="px-4 py-1.5 rounded-full bg-cardDark text-xs text-textMuted hover:bg-cardLighter hover:text-white transition-colors border border-borderDark">25
+                            دقيقة</button>
+                        <button onclick="setTimerDuration(15)"
+                            class="px-4 py-1.5 rounded-full bg-cardDark text-xs text-textMuted hover:bg-cardLighter hover:text-white transition-colors border border-borderDark">15
+                            دقيقة</button>
+                        <button onclick="setTimerDuration(5)"
+                            class="px-4 py-1.5 rounded-full bg-cardDark text-xs text-textMuted hover:bg-cardLighter hover:text-white transition-colors border border-borderDark">5
+                            دقائق</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. شاشة الإحصائيات (Stats) -->
+            <section id="view-stats" class="p-6 hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold">التقارير</h2>
+                    <p class="text-textMuted text-sm mt-1">نظرة عامة على أدائك</p>
+                </div>
+
+                <!-- إحصائيات سريعة -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-cardDark rounded-3xl p-5 flex flex-col items-center justify-center">
+                        <div class="text-3xl font-bold font-numbers text-accentGreen mb-1" id="stat-total-done">0</div>
+                        <div class="text-xs text-textMuted">المهام المنجزة</div>
+                    </div>
+                    <div class="bg-cardDark rounded-3xl p-5 flex flex-col items-center justify-center">
+                        <div class="text-3xl font-bold font-numbers text-accentPurp mb-1" id="stat-completion-rate">0%
+                        </div>
+                        <div class="text-xs text-textMuted">معدل الإنجاز</div>
+                    </div>
+                </div>
+
+                <!-- الرسم البياني الأسبوعي (Bar) -->
+                <div class="bg-cardDark rounded-3xl p-5 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-sm">أداء الأسبوع</h3>
+                        <i class="fa-solid fa-chart-column text-textMuted"></i>
+                    </div>
+                    <div class="h-48 w-full">
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- الرسم البياني للتصنيفات (Doughnut) -->
+                <div class="bg-cardDark rounded-3xl p-5 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-sm">توزيع المهام</h3>
+                        <i class="fa-solid fa-chart-pie text-textMuted"></i>
+                    </div>
+                    <div class="relative h-48 w-full flex items-center justify-center">
+                        <canvas id="categoryChart"></canvas>
+                        <!-- مركز الدائرة -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none flex-col">
+                            <span class="text-2xl font-bold font-numbers" id="stat-total-tasks">0</span>
+                            <span class="text-[10px] text-textMuted">إجمالي المهام</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. شاشة المفكرات (Notes) -->
+            <section id="view-notes" class="p-6 hidden h-full flex flex-col relative">
+                <div class="flex items-center gap-4 mb-6">
+                    <button onclick="navigate('options')"
+                        class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-colors hover:text-white">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <h2 class="text-2xl font-bold">المفكرات</h2>
+                </div>
+                <!-- قائمة المذكرات -->
+                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24 grid grid-cols-1 gap-4 content-start"
+                    id="notes-list">
+                    <!-- سيتم تعبئته بالجافاسكربت -->
+                    <div class="text-center text-textMuted mt-10 w-full" id="empty-notes-msg">
+                        <i class="fa-solid fa-book-open text-4xl mb-3 opacity-50"></i>
+                        <p>لا توجد مذكرات، ابدأ بكتابة أفكارك.</p>
+                    </div>
+                </div>
+
+                <!-- الشريط السفلي المخصص -->
+                <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] bg-cardDark/90 backdrop-blur-xl border border-white/10 p-2 z-40 rounded-full shadow-[0_15px_35px_rgba(0,0,0,0.5)] flex items-center gap-2">
+                    <button onclick="openNoteEditor()" class="flex-1 bg-accentGreen text-bgDark font-bold rounded-full py-3 tap-effect flex items-center justify-center gap-2 hover:bg-accentGreen/90 transition-colors">
+                        <i class="fa-solid fa-plus"></i> إنشاء مفكرة جديدة
+                    </button>
+                    <div class="w-12 h-12 rounded-full bg-cardLighter border border-borderDark flex items-center justify-center text-textMuted shrink-0">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                </div>
+
+                <!-- واجهة المحرر -->
+                <div id="note-editor"
+                    class="absolute inset-0 bg-[#1A1A1A] z-20 flex flex-col hidden transition-opacity duration-300 opacity-0">
+                    <div class="flex items-center gap-4 p-6 pb-2 border-b border-borderDark">
+                        <button onclick="closeNoteEditor()"
+                            class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-colors hover:text-white">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <input type="text" id="note-title-input" placeholder="عنوان المذكرة..."
+                            class="bg-transparent border-none outline-none text-white text-xl font-bold flex-1">
+                        <button onclick="saveNote()"
+                            class="text-accentGreen font-bold px-3 py-1 rounded-lg bg-accentGreen/10 hover:bg-accentGreen/20 transition-colors">حفظ</button>
+                    </div>
+                    <div class="flex-1 p-6 overflow-y-auto">
+                        <textarea id="note-content-input"
+                            class="w-full h-full bg-transparent border-none outline-none text-white/90 resize-none text-lg leading-relaxed"
+                            placeholder="اكتب أفكارك هنا..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. شاشة الأرشيف (Archive) -->
+            <section id="view-archive" class="p-6 hidden h-full flex flex-col relative">
+                <div class="flex items-center gap-4 mb-6">
+                    <button onclick="navigate('tasks')"
+                        class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-colors hover:text-white">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <div class="text-center flex-1">
+                        <h2 class="text-2xl font-bold">الأرشيف</h2>
+                        <p class="text-textMuted text-sm mt-1">المهام المنجزة</p>
+                    </div>
+                    <button onclick="clearArchive()"
+                        class="w-10 h-10 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center tap-effect shrink-0 transition-colors hover:bg-red-500/20"
+                        title="تفريغ الأرشيف">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24" id="archive-list">
+                    <!-- المهام المؤرشفة تظهر هنا -->
+                    <div class="text-center text-textMuted mt-10" id="empty-archive-msg">
+                        <i class="fa-solid fa-box-open text-4xl mb-3 opacity-50"></i>
+                        <p>الأرشيف فارغ.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. نافذة الإعدادات (Modal) -->
+            <div id="settings-modal"
+                class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
+                <div class="bg-cardDark w-11/12 max-w-sm rounded-3xl p-6 transform scale-95 transition-transform duration-300"
+                    id="settings-content">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold">الإعدادات</h3>
+                        <button onclick="closeSettings()"
+                            class="text-textMuted hover:text-white w-8 h-8 rounded-full bg-cardLighter flex items-center justify-center"><i
+                                class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-cardLighter p-4 rounded-2xl">
+                            <h4 class="font-bold text-sm mb-2 text-accentPurp">إدارة البيانات</h4>
+                            <p class="text-xs text-textMuted mb-4">تصدير أو استيراد بياناتك للحفظ كنسخة احتياطية.</p>
+                            <div class="flex gap-2">
+                                <button onclick="exportData()"
+                                    class="flex-1 py-2 bg-cardDark border border-borderDark rounded-xl text-sm hover:bg-white/5 transition-colors text-white"><i
+                                        class="fa-solid fa-download ml-2"></i> تصدير</button>
+                                <label
+                                    class="flex-1 py-2 bg-cardDark border border-borderDark rounded-xl text-sm hover:bg-white/5 transition-colors text-center cursor-pointer text-white">
+                                    <i class="fa-solid fa-upload ml-2"></i> استيراد
+                                    <input type="file" id="import-file" class="hidden" accept=".json"
+                                        onchange="importData(event)">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="bg-cardLighter p-4 rounded-2xl border border-red-500/20">
+                            <h4 class="font-bold text-sm mb-2 text-red-400">حذف البيانات</h4>
+                            <p class="text-xs text-textMuted mb-4">سيتم مسح جميع المهام والإحصائيات بشكل نهائي.</p>
+                            <button onclick="clearAllData()"
+                                class="w-full py-2 bg-red-500/20 text-red-400 rounded-xl text-sm hover:bg-red-500/30 transition-colors font-bold">مسح
+                                جميع البيانات</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- نافذة إضافة المهمة المنبثقة من الأسفل (Bottom Sheet) -->
+            <div id="add-task-modal" class="fixed inset-0 z-[60] pointer-events-none flex flex-col justify-end">
+                <!-- خلفية مظلمة -->
+                <div id="add-task-overlay"
+                    class="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 pointer-events-none"
+                    onclick="closeAddTaskModal()"></div>
+                <!-- المحتوى -->
+                <div id="add-task-content"
+                    class="bg-cardDark rounded-t-[32px] p-6 relative w-full max-w-[400px] mx-auto transform translate-y-full transition-transform duration-300 ease-out flex flex-col gap-5 border-t border-white/10 shadow-[0_-15px_40px_rgba(0,0,0,0.6)]">
+                    <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-2"></div>
+
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-bold">مهمة جديدة</h3>
+                        <button onclick="closeAddTaskModal()"
+                            class="w-8 h-8 rounded-full bg-white/5 text-textMuted flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- اسم المهمة -->
+                    <div
+                        class="bg-[#121212] rounded-2xl p-4 border border-borderDark focus-within:border-accentPurp transition-colors">
+                        <input type="text" id="new-task-input" placeholder="ماذا تريد أن تنجز؟"
+                            class="bg-transparent border-none outline-none text-white w-full text-lg"
+                            onkeypress="if(event.key === 'Enter') addTask()">
+                    </div>
+
+                    <!-- التصنيف والأولوية -->
+                    <div class="flex gap-4">
+                        <!-- تصنيف مخصص -->
+                        <div id="custom-category-select"
+                            class="flex-1 bg-[#121212] rounded-2xl p-3 border border-borderDark flex flex-col gap-1 transition-colors relative cursor-pointer"
+                            onclick="toggleCustomSelect('category-options')">
+                            <label class="text-[10px] text-textMuted px-1 pointer-events-none">التصنيف</label>
+                            <div class="text-white text-sm px-1 flex items-center justify-between pointer-events-none">
+                                <span id="selected-category" data-value="عام">عام 🌍</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-textMuted transition-transform duration-300"
+                                    id="category-chevron"></i>
+                            </div>
+                            <div class="custom-select-options" id="category-options">
+                                <div class="custom-option"
+                                    onclick="selectCustomOption('category', 'عمل', 'عمل 💼', event)">عمل 💼</div>
+                                <div class="custom-option"
+                                    onclick="selectCustomOption('category', 'شخصي', 'شخصي 👤', event)">شخصي 👤</div>
+                                <div class="custom-option"
+                                    onclick="selectCustomOption('category', 'دراسة', 'دراسة 📚', event)">دراسة 📚</div>
+                                <div class="custom-option"
+                                    onclick="selectCustomOption('category', 'عام', 'عام 🌍', event)">عام 🌍</div>
+                            </div>
+                        </div>
+
+                        <!-- أولوية مخصصة -->
+                        <div id="custom-priority-select"
+                            class="flex-1 bg-[#121212] rounded-2xl p-3 border border-borderDark flex flex-col gap-1 transition-colors relative cursor-pointer"
+                            onclick="toggleCustomSelect('priority-options')">
+                            <label class="text-[10px] text-textMuted px-1 pointer-events-none">الأولوية</label>
+                            <div class="text-white text-sm px-1 flex items-center justify-between pointer-events-none">
+                                <span id="selected-priority" data-value="طبيعي">طبيعي 🟢</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-textMuted transition-transform duration-300"
+                                    id="priority-chevron"></i>
+                            </div>
+                            <div class="custom-select-options" id="priority-options">
+                                <div class="custom-option"
+                                    onclick="selectCustomOption('priority', 'طبيعي', 'طبيعي 🟢', event)">طبيعي 🟢</div>
+                                <div class="custom-option"
+                                    onclick="selectCustomOption('priority', 'متوسط', 'متوسط 🟡', event)">متوسط 🟡</div>
+                                <div class="custom-option"
+                                    onclick="selectCustomOption('priority', 'مهم', 'مهم 🔴', event)">مهم 🔴</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- زر الحفظ -->
+                    <button onclick="addTask()"
+                        class="w-full bg-accentPurp text-white font-bold rounded-2xl py-4 mt-2 tap-effect shadow-glow flex items-center justify-center gap-2 mb-4">
+                        حفظ المهمة <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- نافذة التأكيد المخصصة للحذف -->
+        <div id="delete-confirm-modal"
+            class="fixed inset-0 z-[70] pointer-events-none flex items-center justify-center">
+            <div id="delete-confirm-overlay"
+                class="absolute inset-0 bg-black/70 opacity-0 transition-opacity duration-300 pointer-events-none backdrop-blur-sm"
+                onclick="closeDeleteConfirm()"></div>
+            <div id="delete-confirm-content"
+                class="bg-cardDark rounded-3xl p-6 relative w-11/12 max-w-sm mx-auto transform scale-90 opacity-0 transition-all duration-300 flex flex-col gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-red-500/20">
+                <div
+                    class="w-16 h-16 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto text-3xl mb-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="text-xl font-bold text-center text-white">تأكيد الحذف</h3>
+                <p class="text-textMuted text-center text-sm mb-2">هل أنت متأكد من رغبتك في حذف هذه المهمة؟ لا يمكن
+                    التراجع عن هذا الإجراء.</p>
+                <div class="flex gap-3 mt-2">
+                    <button onclick="closeDeleteConfirm()"
+                        class="flex-1 py-3 rounded-xl bg-cardLighter text-textMuted font-bold hover:text-white transition-colors">إلغاء</button>
+                    <button id="confirm-delete-btn"
+                        class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold shadow-[0_0_15px_rgba(239,68,68,0.4)] hover:bg-red-600 transition-colors">حذف
+                        نهائي</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- شريط التنقل السفلي المطور (FAB Style) -->
+        <nav id="main-nav" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] z-40">
+            <div class="bg-[#111111] px-2 py-2 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.5)] border border-white/5 flex justify-between items-center relative w-full h-[68px]">
+
+                <button onclick="navigate('home')"
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="home">
+                    <i class="fa-solid fa-house text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                </button>
+
+                <button onclick="handleTasksNavClick()"
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="tasks">
+                    <i class="fa-solid fa-check-double text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                </button>
+
+                <!-- زر الإضافة المركزي (FAB) -->
+                <div class="flex-1 flex justify-center relative">
+                    <div class="absolute -top-[44px] w-[64px] h-[64px] bg-[#111111] rounded-full flex items-center justify-center border-t border-white/5">
+                        <button onclick="openAddTaskModal()" class="w-[50px] h-[50px] bg-white rounded-full flex items-center justify-center text-[#111111] text-[22px] shadow-[0_4px_15px_rgba(0,0,0,0.3)] tap-effect hover:scale-105 transition-transform z-50">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="navigate('stats')"
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="stats">
+                    <i class="fa-solid fa-chart-simple text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                </button>
+
+                <button onclick="navigate('options')"
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="options">
+                    <i class="fa-solid fa-layer-group text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                </button>
+
+            </div>
+        </nav>
+
+        <!-- Onboarding Overlay -->
+        <div id="onboarding-overlay"
+            class="absolute inset-0 bg-bgDark flex flex-col items-center justify-center p-6 hidden">
+
+            <!-- Step 1: Name & Avatar -->
+            <div id="onboard-step-1" class="onboard-step active flex-col w-full max-w-sm items-center text-center">
+                <div class="relative w-24 h-24 mb-6 cursor-pointer group" onclick="cycleAvatar()">
+                    <div
+                        class="w-full h-full rounded-full bg-accentPurp/20 text-accentPurp flex items-center justify-center text-5xl shadow-glow transition-transform duration-300 group-hover:scale-105">
+                        <i class="fa-solid fa-user-astronaut transition-transform duration-300"
+                            id="onboard-avatar-icon"></i>
+                    </div>
+                    <div
+                        class="absolute bottom-0 right-0 w-8 h-8 bg-cardDark border-2 border-bgDark rounded-full flex items-center justify-center text-textMuted text-xs shadow-lg">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </div>
+                </div>
+                <h2 class="text-3xl font-extrabold text-white mb-2">أهلاً بك في <span
+                        class="text-accentPurp">مُنجِز</span></h2>
+                <p class="text-textMuted mb-8 text-sm">تطبيقك الشخصي لإدارة المهام بذكاء وسهولة.</p>
+                <div
+                    class="w-full bg-[#121212] rounded-2xl p-4 border border-borderDark focus-within:border-accentPurp transition-colors mb-8">
+                    <input type="text" id="onboard-name-input" placeholder="ما هو اسمك؟"
+                        class="bg-transparent border-none outline-none text-white w-full text-center text-xl font-bold"
+                        onkeypress="if(event.key === 'Enter') nextOnboardStep(2)">
+                </div>
+                <button onclick="nextOnboardStep(2)"
+                    class="w-full bg-accentPurp text-white font-bold rounded-2xl py-4 tap-effect shadow-glow flex items-center justify-center gap-2">
+                    التالي <i class="fa-solid fa-arrow-left"></i>
+                </button>
+            </div>
+
+            <!-- Step 2: Interests -->
+            <div id="onboard-step-2" class="onboard-step flex-col w-full max-w-sm items-center text-center">
+                <h2 class="text-2xl font-extrabold text-white mb-2">ما هي اهتماماتك؟</h2>
+                <p class="text-textMuted mb-8 text-sm">اختر المجالات التي تركز عليها لتخصيص مهامك.</p>
+                <div class="grid grid-cols-2 gap-3 w-full mb-8">
+                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
+                        onclick="toggleInterest(this, 'العمل')"><i class="fa-solid fa-briefcase ml-2"></i>
+                        العمل</button>
+                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
+                        onclick="toggleInterest(this, 'الدراسة')"><i class="fa-solid fa-book ml-2"></i> الدراسة</button>
+                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
+                        onclick="toggleInterest(this, 'الصحة')"><i class="fa-solid fa-heart-pulse ml-2"></i>
+                        الصحة</button>
+                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
+                        onclick="toggleInterest(this, 'الرياضة')"><i class="fa-solid fa-dumbbell ml-2"></i>
+                        الرياضة</button>
+                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
+                        onclick="toggleInterest(this, 'تطوير شخصي')"><i class="fa-solid fa-arrow-trend-up ml-2"></i>
+                        تطوير شخصي</button>
+                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
+                        onclick="toggleInterest(this, 'العائلة')"><i class="fa-solid fa-house-user ml-2"></i>
+                        العائلة</button>
+                </div>
+                <div class="flex gap-3 w-full">
+                    <button onclick="nextOnboardStep(1)"
+                        class="py-4 px-6 rounded-2xl bg-cardLighter text-textMuted font-bold hover:text-white transition-colors"><i
+                            class="fa-solid fa-arrow-right"></i></button>
+                    <button onclick="nextOnboardStep(3)"
+                        class="flex-1 bg-accentPurp text-white font-bold rounded-2xl py-4 tap-effect shadow-glow flex items-center justify-center gap-2">التالي
+                        <i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 3: Level -->
+            <div id="onboard-step-3" class="onboard-step flex-col w-full max-w-sm items-center text-center">
+                <h2 class="text-2xl font-extrabold text-white mb-2">مستوى إنتاجيتك الحالي؟</h2>
+                <p class="text-textMuted mb-8 text-sm">سيساعدنا هذا في تخصيص تحدياتك.</p>
+                <div class="flex flex-col gap-3 w-full mb-8">
+                    <button class="level-btn rounded-xl p-4 text-right flex items-center justify-between"
+                        onclick="selectLevel(this, 'مبتدئ')">
+                        <span class="font-bold text-white">مبتدئ 🌱</span>
+                        <span class="text-xs text-textMuted">أحاول تنظيم وقتي</span>
+                    </button>
+                    <button class="level-btn rounded-xl p-4 text-right flex items-center justify-between"
+                        onclick="selectLevel(this, 'متوسط')">
+                        <span class="font-bold text-white">متوسط ⭐</span>
+                        <span class="text-xs text-textMuted">أنجز مهامي بانتظام</span>
+                    </button>
+                    <button class="level-btn rounded-xl p-4 text-right flex items-center justify-between"
+                        onclick="selectLevel(this, 'متقدم')">
+                        <span class="font-bold text-white">متقدم 🔥</span>
+                        <span class="text-xs text-textMuted">منظم جداً ومنتج</span>
+                    </button>
+                    <button class="level-btn rounded-xl p-4 text-right flex items-center justify-between"
+                        onclick="selectLevel(this, 'أسطورة')">
+                        <span class="font-bold text-white">أسطورة 👑</span>
+                        <span class="text-xs text-textMuted">أحقق أهدافي بلا توقف</span>
+                    </button>
+                </div>
+                <div class="flex gap-3 w-full">
+                    <button onclick="nextOnboardStep(2)"
+                        class="py-4 px-6 rounded-2xl bg-cardLighter text-textMuted font-bold hover:text-white transition-colors"><i
+                            class="fa-solid fa-arrow-right"></i></button>
+                    <button onclick="nextOnboardStep(4)"
+                        class="flex-1 bg-accentGreen text-bgDark font-bold rounded-2xl py-4 tap-effect shadow-[0_0_15px_rgba(136,237,170,0.3)] flex items-center justify-center gap-2">التالي
+                        <i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 4: Final -->
+            <div id="onboard-step-4"
+                class="onboard-step flex-col w-full max-w-sm items-center text-center justify-center h-full">
+                <div class="w-32 h-32 relative mb-6">
+                    <div class="absolute inset-0 bg-accentPurp opacity-20 rounded-full blur-xl animate-pulse"></div>
+                    <div
+                        class="relative w-full h-full bg-cardDark border border-accentPurp rounded-full flex items-center justify-center text-5xl shadow-glow">
+                        <i class="fa-solid fa-rocket text-accentPurp"></i>
+                    </div>
+                </div>
+                <h2 class="text-3xl font-extrabold text-white mb-4 leading-tight" id="onboard-final-text">أهلاً بك يا
+                    <br><span class="text-accentPurp" id="onboard-final-name"></span><br>في تطبيق منجز
+                </h2>
+                <p class="text-textMuted mb-10 text-sm">كل شيء جاهز للبدء في تحقيق أهدافك.</p>
+                <button onclick="finishOnboarding()"
+                    class="w-full bg-accentPurp text-white font-bold rounded-2xl py-4 tap-effect shadow-glow flex items-center justify-center text-lg">
+                    ابدأ رحلتك
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- أكواد الجافاسكريبت -->
+    <script>
+        // --- حالة التطبيق (State) ---
+        let tasks = JSON.parse(localStorage.getItem('app_tasks')) || [];
+        let notes = JSON.parse(localStorage.getItem('app_notes')) || [];
+        let userData = JSON.parse(localStorage.getItem('app_user_data')) || null;
+        let dailyPlan = JSON.parse(localStorage.getItem('app_daily_plan')) || [];
+        let onboardData = { name: '', interests: [], level: '', avatar: 'fa-user-astronaut' };
+
+        const avatarOptions = ['fa-user-astronaut', 'fa-user-ninja', 'fa-user-tie', 'fa-user-graduate', 'fa-user-doctor', 'fa-user-secret', 'fa-user-robot', 'fa-user-injured', 'fa-ghost', 'fa-skull', 'fa-crown', 'fa-hat-wizard', 'fa-masks-theater'];
+        let currentAvatarIndex = 0;
+
+        function cycleAvatar() {
+            currentAvatarIndex = (currentAvatarIndex + 1) % avatarOptions.length;
+            onboardData.avatar = avatarOptions[currentAvatarIndex];
+
+            const iconEl = document.getElementById('onboard-avatar-icon');
+            // Animate out
+            iconEl.classList.remove('scale-100');
+            iconEl.classList.add('scale-50', 'opacity-0');
+
+            setTimeout(() => {
+                iconEl.className = `fa-solid ${onboardData.avatar} transition-all duration-300 scale-50 opacity-0`;
+                // Animate in
+                requestAnimationFrame(() => {
+                    iconEl.classList.remove('scale-50', 'opacity-0');
+                    iconEl.classList.add('scale-100', 'opacity-100');
+                });
+            }, 150);
+        }
+
+        let categories = {
+            'عمل': { color: 'text-accentPurp', bg: 'bg-accentPurp/20', icon: 'fa-briefcase' },
+            'شخصي': { color: 'text-accentGreen', bg: 'bg-accentGreen/20', icon: 'fa-user' },
+            'دراسة': { color: 'text-accentOrange', bg: 'bg-accentOrange/20', icon: 'fa-book' },
+            'عام': { color: 'text-blue-400', bg: 'bg-blue-400/20', icon: 'fa-list' },
+            'الصحة': { color: 'text-red-400', bg: 'bg-red-400/20', icon: 'fa-heart-pulse' },
+            'الرياضة': { color: 'text-yellow-400', bg: 'bg-yellow-400/20', icon: 'fa-dumbbell' },
+            'تطوير شخصي': { color: 'text-blue-400', bg: 'bg-blue-400/20', icon: 'fa-arrow-trend-up' },
+            'العائلة': { color: 'text-green-400', bg: 'bg-green-400/20', icon: 'fa-house-user' }
+        };
+        let currentDate = new Date();
+        let selectedDateStr = formatDate(currentDate);
+
+        // متغيرات المؤقت
+        let timerInterval;
+        let timerDuration = 25 * 60; // 25 دقيقة افتراضياً
+        let timeLeft = timerDuration;
+        let isTimerRunning = false;
+        let isWorkMode = true; // true = عمل, false = استراحة
+        const TIMER_CIRCUMFERENCE = 816.8; // محيط الدائرة (2 * pi * r)
+
+        // متغيرات المخططات
+        let weeklyChartInstance = null;
+        let categoryChartInstance = null;
+
+        // --- دوال التهيئة ---
+        function init() {
+            if (!userData) {
+                document.getElementById('onboarding-overlay').classList.remove('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+                document.querySelector('nav').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('onboarding-overlay').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            document.querySelector('nav').classList.remove('hidden');
+
+            // Set user data UI
+            document.getElementById('home-user-name').textContent = userData.name;
+            const levelBadge = document.getElementById('home-user-level');
+            levelBadge.textContent = userData.level;
+            levelBadge.classList.remove('hidden');
+
+            const homeAvatar = document.getElementById('home-avatar-icon');
+            if (homeAvatar && userData.avatar) {
+                homeAvatar.className = `fa-solid ${userData.avatar}`;
+            }
+
+            updateCategoryOptions();
+
+            setGreeting();
+            updateDateText();
+            generateCalendarStrip();
+            renderTasks();
+            updateHomeStats();
+            initCharts();
+            renderNotesList();
+            renderArchiveList();
+            
+            checkNewDayForPlan();
+            renderDailyPlan();
+            updateDayCountdown();
+            setInterval(updateDayCountdown, 1000);
+            
+            navigate('home'); // الشاشة الافتراضية
+            updateTimerDisplay();
+        }
+
+        // --- منطق زر المهام المزدوج ---
+        let lastTasksClickTime = 0;
+        let dailyPlanBackTarget = 'options';
+
+        function handleTasksNavClick() {
+            const now = Date.now();
+            const currentView = document.querySelector('main > section:not(.hidden)').id;
+
+            if (currentView === 'view-tasks' && now - lastTasksClickTime < 400) {
+                // Double tap detected while on tasks page
+                openDailyPlanFromTasks();
+            } else {
+                navigate('tasks');
+            }
+            lastTasksClickTime = now;
+        }
+
+        function openDailyPlanFromTasks() {
+            dailyPlanBackTarget = 'tasks';
+            
+            const dailyPlanView = document.getElementById('view-daily-plan');
+            
+            // إضافة كلاسات الأنيميشن السريع
+            dailyPlanView.classList.remove('animate-fast-fade-in');
+            void dailyPlanView.offsetWidth; // Trigger reflow
+            dailyPlanView.classList.add('animate-fast-fade-in');
+            
+            navigate('daily-plan');
+            
+            // تنظيف الكلاس بعد انتهاء الأنيميشن
+            setTimeout(() => {
+                dailyPlanView.classList.remove('animate-fast-fade-in');
+            }, 300);
+        }
+
+        function navigateDailyPlanBack() {
+            navigate(dailyPlanBackTarget);
+            dailyPlanBackTarget = 'options'; // Reset back to default
+        }
+
+        // --- التنقل بين الشاشات ---
+        function navigate(viewId) {
+            // إخفاء جميع الشاشات
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            // إظهار الشاشة المطلوبة
+            document.getElementById(`view-${viewId}`).classList.remove('hidden');
+
+            // إخفاء أو إظهار شريط التنقل الرئيسي
+            const mainNav = document.getElementById('main-nav');
+            if (['home', 'tasks', 'options', 'stats'].includes(viewId)) {
+                if (mainNav) mainNav.classList.remove('hidden');
+            } else {
+                if (mainNav) mainNav.classList.add('hidden');
+            }
+
+            // تحديث تصميم شريط التنقل
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const icon = btn.querySelector('.nav-icon');
+
+                if (btn.dataset.target === viewId) {
+                    btn.classList.add('bg-accentPurp/20');
+                    btn.classList.remove('bg-transparent');
+                    icon.classList.add('text-accentPurp');
+                    icon.classList.remove('text-textMuted');
+                } else {
+                    btn.classList.remove('bg-accentPurp/20');
+                    btn.classList.add('bg-transparent');
+                    icon.classList.remove('text-accentPurp');
+                    icon.classList.add('text-textMuted');
+                }
+            });
+
+            // تحديث الإحصائيات إذا تم فتح شاشتها
+            if (viewId === 'stats') {
+                updateStatsData();
+            }
+        }
+
+        // --- دوال المخطط اليومي ---
+        function checkNewDayForPlan() {
+            const lastDate = localStorage.getItem('app_daily_plan_date');
+            const today = formatDate(new Date());
+            if (lastDate !== today) {
+                dailyPlan = [];
+                localStorage.setItem('app_daily_plan_date', today);
+                saveDailyPlan();
+            }
+        }
+
+        function updateDayCountdown() {
+            const el = document.getElementById('day-countdown');
+            if (!el) return;
+            const now = new Date();
+            const endOfDay = new Date(now);
+            endOfDay.setHours(23, 59, 59, 999);
+            const diff = endOfDay - now;
+            if (diff <= 0) {
+                el.textContent = "00:00:00";
+                return;
+            }
+            const h = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+            el.textContent = `${h}:${m}:${s}`;
+        }
+
+        function renderDailyPlan() {
+            const list = document.getElementById('daily-plan-list');
+            if(!list) return;
+            list.innerHTML = '';
+            
+            if (dailyPlan.length === 0) {
+                list.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-textMuted opacity-50 mt-10">
+                        <i class="fa-solid fa-calendar-day text-4xl mb-3"></i>
+                        <p class="text-sm">لم تقم بإضافة أي مواعيد اليوم.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            dailyPlan.sort((a, b) => {
+                if (!a.time) return 1;
+                if (!b.time) return -1;
+                return a.time.localeCompare(b.time);
+            });
+
+            dailyPlan.forEach((item) => {
+                const row = document.createElement('div');
+                row.className = `flex items-center gap-2 border-b border-white/5 py-2 transition-colors hover:bg-white/5 rounded-lg px-2 group ${item.completed ? 'opacity-50' : ''}`;
+                
+                row.innerHTML = `
+                    <div class="w-5 h-5 rounded border ${item.completed ? 'bg-accentOrange border-accentOrange text-bgDark' : 'border-textMuted/50 text-transparent'} flex items-center justify-center shrink-0 cursor-pointer tap-effect transition-colors" onclick="toggleDailyPlan('${item.id}')">
+                        <i class="fa-solid fa-check text-[10px]"></i>
+                    </div>
+                    <input type="text" class="flex-1 bg-transparent border-none outline-none text-[15px] ${item.completed ? 'line-through text-textMuted' : 'text-white'} placeholder-textMuted/30 focus:text-accentOrange transition-colors px-2" placeholder="مهمة جديدة..." value="${item.task}" onchange="updateDailyPlan('${item.id}', 'task', this.value)">
+                    <input type="time" class="bg-cardLighter/80 rounded-lg px-1 py-1 text-sm outline-none text-accentGreen font-numbers border border-transparent focus:border-accentGreen/50 w-[80px] text-center" value="${item.time}" onchange="updateDailyPlan('${item.id}', 'time', this.value)">
+                    <button onclick="deleteDailyPlan('${item.id}')" class="w-8 h-8 flex items-center justify-center text-textMuted hover:text-red-400 hover:bg-red-400/10 rounded-full transition-colors shrink-0">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function addDailyPlanTask() {
+            dailyPlan.push({
+                id: Date.now().toString(),
+                task: '',
+                time: '',
+                completed: false
+            });
+            saveDailyPlan();
+            renderDailyPlan();
+        }
+
+        function updateDailyPlan(id, field, value) {
+            const item = dailyPlan.find(i => i.id === id);
+            if (item) {
+                item[field] = value;
+                saveDailyPlan();
+                if (field === 'time') renderDailyPlan();
+            }
+        }
+
+        function toggleDailyPlan(id) {
+            const item = dailyPlan.find(i => i.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                saveDailyPlan();
+                renderDailyPlan();
+                if(item.completed && typeof triggerConfetti === 'function') triggerConfetti();
+            }
+        }
+
+        function deleteDailyPlan(id) {
+            dailyPlan = dailyPlan.filter(i => i.id !== id);
+            saveDailyPlan();
+            renderDailyPlan();
+        }
+
+        function saveDailyPlan() {
+            localStorage.setItem('app_daily_plan', JSON.stringify(dailyPlan));
+        }
+
+        // --- دوال مساعدة للتاريخ ---
+        function formatDate(date) {
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function updateDateText() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date-text').textContent = currentDate.toLocaleDateString('ar-EG', options);
+        }
+
+        function setGreeting() {
+            const hour = new Date().getHours();
+            let greeting = 'أهلاً بك';
+            if (hour < 12) greeting = 'صباح الخير';
+            else if (hour < 18) greeting = 'مساء الخير';
+
+            if (userData && userData.name) {
+                document.getElementById('greeting-text').innerHTML = `${greeting}، <br><span class="text-accentPurp">${userData.name}</span>`;
+            } else {
+                document.getElementById('greeting-text').textContent = greeting;
+            }
+        }
+
+        // --- دوال الإعداد (Onboarding) ---
+        function nextOnboardStep(step) {
+            if (step === 2) {
+                const nameInput = document.getElementById('onboard-name-input').value.trim();
+                if (!nameInput) return;
+                onboardData.name = nameInput;
+            }
+            if (step === 4) {
+                if (!onboardData.level) return;
+                document.getElementById('onboard-final-name').textContent = onboardData.name;
+            }
+
+            document.querySelectorAll('.onboard-step').forEach(el => el.classList.remove('active'));
+            document.getElementById('onboard-step-' + step).classList.add('active');
+        }
+
+        function toggleInterest(btn, interest) {
+            if (onboardData.interests.includes(interest)) {
+                onboardData.interests = onboardData.interests.filter(i => i !== interest);
+                btn.classList.remove('selected');
+            } else {
+                onboardData.interests.push(interest);
+                btn.classList.add('selected');
+            }
+        }
+
+        function selectLevel(btn, level) {
+            document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            onboardData.level = level;
+        }
+
+        function finishOnboarding() {
+            if (onboardData.interests.length === 0) onboardData.interests.push('عام');
+            userData = onboardData;
+            localStorage.setItem('app_user_data', JSON.stringify(userData));
+
+            const overlay = document.getElementById('onboarding-overlay');
+            overlay.style.transition = 'opacity 0.8s ease';
+            overlay.style.opacity = '0';
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                overlay.style.opacity = '1';
+                init();
+            }, 800);
+        }
+
+        function updateCategoryOptions() {
+            if (!userData) return;
+            const container = document.getElementById('category-options');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Always add default
+            let allOptions = ['عام', 'عمل', 'شخصي', 'دراسة'];
+            // Add interests
+            userData.interests.forEach(i => {
+                if (!allOptions.includes(i)) allOptions.push(i);
+            });
+
+            allOptions.forEach(opt => {
+                const map = categories[opt] || categories['عام'];
+                container.innerHTML += `<div class="custom-option" onclick="selectCustomOption('category', '${opt}', '${opt}', event)">${opt} <i class="fa-solid ${map.icon} ml-1"></i></div>`;
+            });
+        }
+
+        // --- شريط التقويم الأفقي ---
+        function generateCalendarStrip() {
+            const container = document.getElementById('calendar-strip');
+            container.innerHTML = '';
+
+            const dayNames = ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
+
+            // إنشاء 7 أيام (3 قبل، اليوم، 3 بعد) أو أسبوع كامل
+            let startDate = new Date(currentDate);
+            startDate.setDate(startDate.getDate() - Math.min(startDate.getDay(), 3)); // محاولة توسيط اليوم
+
+            for (let i = 0; i < 14; i++) {
+                let d = new Date(startDate);
+                d.setDate(d.getDate() + i);
+                let dStr = formatDate(d);
+
+                let isSelected = dStr === selectedDateStr;
+                let isToday = dStr === formatDate(new Date());
+
+                let dayEl = document.createElement('div');
+                dayEl.className = `flex flex-col items-center justify-center rounded-full py-3 px-4 min-w-[65px] cursor-pointer transition-colors tap-effect border ${isSelected ? 'bg-accentPurp text-white border-accentPurp shadow-glow' : 'bg-cardDark text-textMuted border-borderDark hover:bg-cardLighter'}`;
+
+                dayEl.innerHTML = `
+                    <span class="text-[10px] mb-1 ${isSelected ? 'text-white/80' : ''}">${dayNames[d.getDay()]}</span>
+                    <span class="font-bold text-lg font-numbers ${isToday && !isSelected ? 'text-accentPurp' : ''}">${d.getDate()}</span>
+                `;
+
+                dayEl.onclick = () => {
+                    selectedDateStr = dStr;
+                    generateCalendarStrip();
+                    renderTasks();
+                };
+
+                container.appendChild(dayEl);
+
+                // تمرير للشريط ليكون العنصر المحدد ظاهراً
+                if (isSelected) {
+                    setTimeout(() => {
+                        dayEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    }, 10);
+                }
+            }
+        }
+
+        // --- إدارة المهام ---
+        function saveTasks() {
+            localStorage.setItem('app_tasks', JSON.stringify(tasks));
+            updateHomeStats();
+            if (!document.getElementById('view-stats').classList.contains('hidden')) {
+                updateStatsData();
+            }
+        }
+
+        function getTasksForSelectedDate() {
+            return tasks.filter(t => t.date === selectedDateStr);
+        }
+
+        // --- الفلترة والنافذة المنبثقة للمهام ---
+        let currentTaskFilter = 'all'; // all, متوسط, مهم
+
+        function cycleTaskFilter() {
+            const btn = document.getElementById('task-filter-btn');
+            const icon = document.getElementById('task-filter-icon');
+
+            if (currentTaskFilter === 'all') {
+                currentTaskFilter = 'متوسط';
+                btn.className = "w-10 h-10 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center border border-yellow-500/50 tap-effect shrink-0 transition-all duration-300 relative overflow-hidden";
+                icon.className = "fa-solid fa-star transition-transform duration-300 rotate-180 scale-110";
+            } else if (currentTaskFilter === 'متوسط') {
+                currentTaskFilter = 'مهم';
+                btn.className = "w-10 h-10 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center border border-red-500/50 tap-effect shrink-0 transition-all duration-300 relative overflow-hidden";
+                icon.className = "fa-solid fa-fire transition-transform duration-300 rotate-[360deg] scale-110";
+            } else {
+                currentTaskFilter = 'all';
+                btn.className = "w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-all duration-300 relative overflow-hidden";
+                icon.className = "fa-solid fa-filter transition-transform duration-300 rotate-0 scale-100";
+            }
+            renderTasks();
+        }
+
+        // Custom Select Functions
+        function toggleCustomSelect(menuId) {
+            event.stopPropagation();
+            const menus = document.querySelectorAll('.custom-select-options');
+            menus.forEach(m => {
+                if (m.id !== menuId) m.classList.remove('show');
+            });
+            const menu = document.getElementById(menuId);
+            const chevron = document.getElementById(menuId === 'category-options' ? 'category-chevron' : 'priority-chevron');
+            menu.classList.toggle('show');
+            if (menu.classList.contains('show')) {
+                chevron.classList.add('rotate-180');
+            } else {
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        function selectCustomOption(type, value, html, e) {
+            e.stopPropagation();
+            const label = document.getElementById(`selected-${type}`);
+            label.innerHTML = html;
+            label.setAttribute('data-value', value);
+            document.getElementById(`${type}-options`).classList.remove('show');
+            document.getElementById(`${type}-chevron`).classList.remove('rotate-180');
+        }
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.custom-select-options').forEach(m => m.classList.remove('show'));
+            document.querySelectorAll('.fa-chevron-down').forEach(c => c.classList.remove('rotate-180'));
+        });
+
+        function openAddTaskModal() {
+            const modal = document.getElementById('add-task-modal');
+            const overlay = document.getElementById('add-task-overlay');
+            const content = document.getElementById('add-task-content');
+
+            modal.classList.remove('pointer-events-none');
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100', 'pointer-events-auto');
+
+            content.classList.remove('translate-y-full');
+            content.classList.add('translate-y-0');
+
+            setTimeout(() => {
+                document.getElementById('new-task-input').focus();
+            }, 300);
+        }
+
+        function closeAddTaskModal() {
+            const modal = document.getElementById('add-task-modal');
+            const overlay = document.getElementById('add-task-overlay');
+            const content = document.getElementById('add-task-content');
+
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            overlay.classList.add('opacity-0');
+
+            content.classList.remove('translate-y-0');
+            content.classList.add('translate-y-full');
+
+            setTimeout(() => {
+                modal.classList.add('pointer-events-none');
+            }, 300);
+        }
+
+        function addTask() {
+            const input = document.getElementById('new-task-input');
+            const categorySelect = document.getElementById('new-task-category');
+            const prioritySelect = document.getElementById('new-task-priority');
+            const text = input.value.trim();
+
+            if (text === '') return;
+
+            const newTask = {
+                id: Date.now().toString(),
+                text: text,
+                category: categorySelect ? categorySelect.value : 'عام',
+                priority: prioritySelect ? prioritySelect.value : 'طبيعي',
+                completed: false,
+                date: selectedDateStr,
+                createdAt: new Date().toISOString()
+            };
+
+            tasks.push(newTask);
+            saveTasks();
+            if (input) input.value = '';
+            closeAddTaskModal();
+            renderTasks();
+            navigate('tasks'); // الانتقال لصفحة المهام بعد إضافة المهمة
+        }
+
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
+                renderTasks();
+
+                if (task.completed) {
+                    triggerConfetti();
+                }
+            }
+        }
+
+        // الحذف المخصص
+        function deleteTask(id, event) {
+            event.stopPropagation();
+            taskToDeleteId = id;
+            openDeleteConfirm();
+        }
+
+        function openDeleteConfirm() {
+            const modal = document.getElementById('delete-confirm-modal');
+            const overlay = document.getElementById('delete-confirm-overlay');
+            const content = document.getElementById('delete-confirm-content');
+
+            modal.classList.remove('pointer-events-none');
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100', 'pointer-events-auto');
+            content.classList.remove('scale-90', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+
+            const btn = document.getElementById('confirm-delete-btn');
+            btn.onclick = () => {
+                if (taskToDeleteId) {
+                    tasks = tasks.filter(t => t.id !== taskToDeleteId);
+                    saveTasks();
+                    renderTasks();
+                    if (!document.getElementById('view-archive').classList.contains('hidden')) {
+                        renderArchiveList();
+                    }
+                    taskToDeleteId = null;
+                }
+                closeDeleteConfirm();
+            };
+        }
+
+        function closeDeleteConfirm() {
+            const modal = document.getElementById('delete-confirm-modal');
+            const overlay = document.getElementById('delete-confirm-overlay');
+            const content = document.getElementById('delete-confirm-content');
+
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            overlay.classList.add('opacity-0');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-90', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('pointer-events-none');
+            }, 300);
+            taskToDeleteId = null;
+        }
+
+        function archiveTask(id, event) {
+            event.stopPropagation();
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.archived = true;
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('tasks-list');
+            let dateTasks = getTasksForSelectedDate().filter(t => !t.archived);
+
+            // تطبيق الفلتر
+            if (currentTaskFilter !== 'all') {
+                dateTasks = dateTasks.filter(t => t.priority === currentTaskFilter);
+            }
+
+            const emptyMsg = document.getElementById('empty-tasks-msg');
+
+            // تنظيف القائمة (باستثناء رسالة الفراغ)
+            Array.from(list.children).forEach(child => {
+                if (child.id !== 'empty-tasks-msg') child.remove();
+            });
+
+            if (dateTasks.length === 0) {
+                emptyMsg.style.display = 'block';
+                return;
+            } else {
+                emptyMsg.style.display = 'none';
+            }
+
+            // ترتيب المهام (غير المكتملة أولاً)
+            dateTasks.sort((a, b) => a.completed === b.completed ? 0 : a.completed ? 1 : -1);
+
+            dateTasks.forEach(task => {
+                const cat = categories[task.category] || categories['عام'];
+                const prioColor = task.priority === 'مهم' ? 'border-r-4 border-r-red-500' : task.priority === 'متوسط' ? 'border-r-4 border-r-yellow-500' : 'border-r-4 border-r-transparent';
+
+                const taskEl = document.createElement('div');
+                taskEl.className = `bg-cardDark rounded-2xl p-4 flex justify-between items-center mb-3 border border-transparent transition-all duration-300 ${prioColor} ${task.completed ? 'opacity-60 border-l-borderDark border-t-borderDark border-b-borderDark' : 'hover:border-l-borderDark hover:border-t-borderDark hover:border-b-borderDark hover:bg-cardLighter'}`;
+
+                taskEl.innerHTML = `
+                    <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="toggleTask('${task.id}')">
+                        <div class="w-11 h-11 rounded-full ${task.completed ? 'bg-borderDark text-textMuted' : cat.bg + ' ' + cat.color} flex items-center justify-center shrink-0 transition-colors">
+                            <i class="fa-solid ${cat.icon}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-[15px] ${task.completed ? 'line-through text-textMuted' : 'text-white'} transition-all">${task.text}</h4>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span class="text-[11px] text-textMuted">${task.category}</span>
+                                ${task.priority === 'مهم' ? '<span class="text-[10px] text-red-500 bg-red-500/10 px-2 rounded-full font-bold">مهم</span>' : task.priority === 'متوسط' ? '<span class="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 rounded-full font-bold">متوسط</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 shrink-0 ml-2">
+                        ${task.completed ? `<button onclick="archiveTask('${task.id}', event)" class="text-accentPurp/50 hover:text-accentPurp p-2 transition-colors" title="أرشفة المهمة"><i class="fa-solid fa-box-archive"></i></button>` : ''}
+                        <button onclick="deleteTask('${task.id}', event)" class="text-red-400/50 hover:text-red-400 p-2 transition-colors" title="حذف">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                        <div class="custom-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${task.id}')">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                    </div>
+                `;
+
+                list.appendChild(taskEl);
+            });
+        }
+
+        // تحديث إحصائيات الصفحة الرئيسية
+        function updateHomeStats() {
+            const todayTasks = tasks.filter(t => t.date === formatDate(new Date()));
+            const total = todayTasks.length;
+            const done = todayTasks.filter(t => t.completed).length;
+            const left = total - done;
+
+            document.getElementById('home-tasks-left').textContent = left;
+            document.getElementById('home-tasks-done').textContent = done;
+
+            const percentage = total === 0 ? 0 : Math.round((done / total) * 100);
+            document.getElementById('home-progress-text').textContent = percentage + '%';
+
+            // تحديث الدائرة
+            // المحيط للدائرة في الرئيسية (r=56) هو تقريباً 351.8
+            const circle = document.getElementById('home-progress-circle');
+            const circumference = 351.8;
+            const offset = circumference - (percentage / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+
+            // تغيير لون الدائرة إذا اكتملت 100%
+            if (percentage === 100 && total > 0) {
+                circle.setAttribute('stroke', '#9B8AF4'); // بنفسجي
+            } else {
+                circle.setAttribute('stroke', '#88EDAA'); // أخضر
+            }
+
+            initRandomTaskDisplay();
+        }
+
+        // --- المهام العشوائية (Hourglass Widget) ---
+        let randomTaskInterval;
+        let randomTaskTimeout;
+        const RANDOM_TASK_DURATION = 5000; // 5 ثواني
+
+        function initRandomTaskDisplay() {
+            clearInterval(randomTaskInterval);
+            clearTimeout(randomTaskTimeout);
+
+            const uncompletedTasks = tasks.filter(t => !t.completed);
+            const contentDiv = document.getElementById('random-task-content');
+            const hourglassBar = document.getElementById('hourglass-bar');
+
+            if (!contentDiv || !hourglassBar) return;
+
+            if (!uncompletedTasks || uncompletedTasks.length === 0) {
+                contentDiv.innerHTML = `<span class="text-textMuted text-sm"><i class="fa-solid fa-mug-hot text-xl mb-2 block"></i>لا توجد مهام حالياً</span>`;
+                contentDiv.classList.remove('opacity-0', 'scale-95');
+                hourglassBar.style.transition = 'none';
+                hourglassBar.style.height = '0%';
+                return;
+            }
+
+            function showNextRandomTask() {
+                // إخفاء المهمة الحالية
+                contentDiv.classList.add('opacity-0', 'translate-y-1');
+
+                // إعادة تعبئة الساعة الرملية بسرعة
+                hourglassBar.style.transition = 'none';
+                hourglassBar.style.height = '100%';
+
+                randomTaskTimeout = setTimeout(() => {
+                    // اختيار مهمة عشوائية
+                    const randomIndex = Math.floor(Math.random() * uncompletedTasks.length);
+                    const task = uncompletedTasks[randomIndex];
+                    const catInfo = categories[task.category] || categories['عام'];
+
+                    // شارة الأولوية
+                    const priorityBadge = document.getElementById('random-priority-badge');
+                    if (task.priority === 'مهم') {
+                        priorityBadge.textContent = '🔴 مهم';
+                        priorityBadge.className = 'text-[8px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30';
+                        priorityBadge.classList.remove('hidden');
+                    } else if (task.priority === 'متوسط') {
+                        priorityBadge.textContent = '🟡 متوسط';
+                        priorityBadge.className = 'text-[8px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
+                        priorityBadge.classList.remove('hidden');
+                    } else {
+                        priorityBadge.className = 'hidden';
+                    }
+
+                    contentDiv.innerHTML = `
+                        <div class="w-8 h-8 rounded-xl ${catInfo.bg} ${catInfo.color} flex items-center justify-center shrink-0" style="box-shadow: 0 0 10px rgba(0,0,0,0.4)">
+                            <i class="fa-solid ${catInfo.icon} text-[13px]"></i>
+                        </div>
+                        <div class="flex flex-col min-w-0">
+                            <span class="text-white font-semibold text-[12px] leading-tight line-clamp-2">${task.text}</span>
+                            <span class="text-white/30 text-[9px] mt-0.5 font-medium">${task.category}</span>
+                        </div>
+                    `;
+
+                    // تغيير لون الساعة الرملية للون التصنيف
+                    hourglassBar.className = `w-full rounded-xl transition-all ${catInfo.color.replace('text-', 'bg-')}`;
+
+                    // إظهار المهمة
+                    contentDiv.classList.remove('opacity-0', 'translate-y-1');
+
+                    // تشغيل انيميشن الساعة الرملية
+                    setTimeout(() => {
+                        hourglassBar.style.transition = `height ${RANDOM_TASK_DURATION}ms linear`;
+                        hourglassBar.style.height = '0%';
+                    }, 50);
+
+                }, 400); // الانتظار حتى تنتهي حركة الإخفاء
+            }
+
+            showNextRandomTask();
+            randomTaskInterval = setInterval(showNextRandomTask, RANDOM_TASK_DURATION + 500);
+        }
+
+        // --- المؤقت (Pomodoro) ---
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const seconds = (timeLeft % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').textContent = `${minutes}:${seconds}`;
+
+            // تحديث الشريط الدائري
+            const progress = timeLeft / timerDuration;
+            const offset = TIMER_CIRCUMFERENCE - (progress * TIMER_CIRCUMFERENCE);
+            document.getElementById('timer-ring').style.strokeDashoffset = offset;
+        }
+
+        function setTimerDuration(mins) {
+            if (isTimerRunning) return; // لا تغير الوقت أثناء التشغيل
+            timerDuration = mins * 60;
+            timeLeft = timerDuration;
+            isWorkMode = (mins >= 25);
+            document.getElementById('timer-mode-text').textContent = isWorkMode ? 'وقت التركيز' : 'وقت الاستراحة';
+
+            // تغيير لون حلقة المؤقت بناء على الوضع
+            document.getElementById('timer-ring').setAttribute('stroke', isWorkMode ? '#9B8AF4' : '#88EDAA');
+
+            updateTimerDisplay();
+        }
+
+        function toggleTimer() {
+            const btnText = document.getElementById('timer-btn-text');
+            const btnIcon = document.getElementById('timer-icon');
+            const startBtn = document.getElementById('btn-start-timer');
+
+            if (isTimerRunning) {
+                // إيقاف
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                btnText.textContent = 'استئناف';
+                btnIcon.className = 'fa-solid fa-play';
+                startBtn.classList.remove('bg-red-500');
+                startBtn.classList.add('bg-accentPurp');
+            } else {
+                // تشغيل
+                isTimerRunning = true;
+                btnText.textContent = 'إيقاف مؤقت';
+                btnIcon.className = 'fa-solid fa-pause';
+                startBtn.classList.remove('bg-accentPurp');
+                startBtn.classList.add('bg-red-500'); // لون أحمر للإيقاف
+
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        playAlarm();
+                        triggerConfetti();
+
+                        // تبديل تلقائي
+                        if (isWorkMode) {
+                            setTimerDuration(5); // استراحة 5 دقائق
+                        } else {
+                            setTimerDuration(25); // عودة للعمل
+                        }
+
+                        btnText.textContent = 'ابدأ';
+                        btnIcon.className = 'fa-solid fa-play';
+                        startBtn.classList.remove('bg-red-500');
+                        startBtn.classList.add('bg-accentPurp');
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timeLeft = timerDuration;
+
+            const btnText = document.getElementById('timer-btn-text');
+            const btnIcon = document.getElementById('timer-icon');
+            const startBtn = document.getElementById('btn-start-timer');
+
+            btnText.textContent = 'ابدأ';
+            btnIcon.className = 'fa-solid fa-play';
+            startBtn.classList.remove('bg-red-500');
+            startBtn.classList.add('bg-accentPurp');
+
+            updateTimerDisplay();
+        }
+
+        function switchTimerMode() {
+            if (isTimerRunning) resetTimer();
+            if (isWorkMode) {
+                setTimerDuration(5);
+            } else {
+                setTimerDuration(25);
+            }
+        }
+
+        function playAlarm() {
+            // صوت تنبيه بسيط باستخدام AudioContext (يجنبنا الحاجة لملف صوتي خارجي)
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.5);
+                osc.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.5);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // --- المؤثرات (Confetti) ---
+        function triggerConfetti() {
+            var duration = 2000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#9B8AF4', '#88EDAA', '#EDB188']
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#9B8AF4', '#88EDAA', '#EDB188']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        // --- الإحصائيات (Chart.js) ---
+        Chart.defaults.color = '#9CA3AF';
+        Chart.defaults.font.family = "'Tajawal', sans-serif";
+
+        function initCharts() {
+            const ctxWeekly = document.getElementById('weeklyChart').getContext('2d');
+            weeklyChartInstance = new Chart(ctxWeekly, {
+                type: 'bar',
+                data: {
+                    labels: ['أحد', 'إثن', 'ثلا', 'أرب', 'خمي', 'جمع', 'سبت'],
+                    datasets: [{
+                        label: 'المهام المنجزة',
+                        data: [0, 0, 0, 0, 0, 0, 0],
+                        backgroundColor: '#9B8AF4',
+                        borderRadius: 20,
+                        barThickness: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false, drawBorder: false }, ticks: { display: false } },
+                        x: { grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+
+            const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+            categoryChartInstance = new Chart(ctxCategory, {
+                type: 'doughnut',
+                data: {
+                    labels: ['عمل', 'شخصي', 'دراسة', 'عام'],
+                    datasets: [{
+                        data: [1, 1, 1, 1], // بيانات افتراضية لمنع ظهور الدائرة فارغة
+                        backgroundColor: ['#9B8AF4', '#88EDAA', '#EDB188', '#60A5FA'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '80%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    }
+                }
+            });
+        }
+
+        function updateStatsData() {
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(t => t.completed).length;
+
+            document.getElementById('stat-total-done').textContent = completedTasks;
+            document.getElementById('stat-completion-rate').textContent = totalTasks ? Math.round((completedTasks / totalTasks) * 100) + '%' : '0%';
+            document.getElementById('stat-total-tasks').textContent = totalTasks;
+
+            // حساب بيانات الأسبوع الحالي
+            let weekData = [0, 0, 0, 0, 0, 0, 0];
+            let curr = new Date();
+            let firstDay = new Date(curr.setDate(curr.getDate() - curr.getDay())); // الأحد
+
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(firstDay);
+                d.setDate(d.getDate() + i);
+                let dString = formatDate(d);
+                let count = tasks.filter(t => t.date === dString && t.completed).length;
+                weekData[i] = count;
+            }
+
+            weeklyChartInstance.data.datasets[0].data = weekData;
+            weeklyChartInstance.update();
+
+            // حساب بيانات التصنيفات
+            let catCounts = { 'عمل': 0, 'شخصي': 0, 'دراسة': 0, 'عام': 0 };
+            tasks.forEach(t => {
+                if (catCounts[t.category] !== undefined) {
+                    catCounts[t.category]++;
+                } else {
+                    catCounts['عام']++;
+                }
+            });
+
+            const catDataArray = [catCounts['عمل'], catCounts['شخصي'], catCounts['دراسة'], catCounts['عام']];
+
+            // إذا كانت كل البيانات 0، نضع قيم وهمية لنرسم دائرة رمادية
+            if (catDataArray.every(v => v === 0)) {
+                categoryChartInstance.data.datasets[0].data = [1];
+                categoryChartInstance.data.datasets[0].backgroundColor = ['#333'];
+                document.getElementById('stat-total-tasks').textContent = '0';
+            } else {
+                categoryChartInstance.data.datasets[0].data = catDataArray;
+                categoryChartInstance.data.datasets[0].backgroundColor = ['#9B8AF4', '#88EDAA', '#EDB188', '#60A5FA'];
+            }
+            categoryChartInstance.update();
+        }
+
+        // --- الإعدادات ---
+        function openSettings() {
+            const modal = document.getElementById('settings-modal');
+            const content = document.getElementById('settings-content');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }
+
+        function closeSettings() {
+            const modal = document.getElementById('settings-modal');
+            const content = document.getElementById('settings-content');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }, 300);
+        }
+
+        function clearAllData() {
+            if (confirm('هل أنت متأكد من مسح جميع البيانات؟ سيتم إعادة تشغيل التطبيق بالكامل.')) {
+                localStorage.removeItem('app_tasks');
+                localStorage.removeItem('app_notes');
+                localStorage.removeItem('app_user_data');
+                window.location.reload();
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(tasks, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'my_tasks_backup.json';
+
+            let linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const importedTasks = JSON.parse(e.target.result);
+                    if (Array.isArray(importedTasks)) {
+                        tasks = importedTasks;
+                        saveTasks();
+                        renderTasks();
+                        closeSettings();
+                        alert("تم استيراد البيانات بنجاح!");
+                        navigate('home');
+                    }
+                } catch (err) {
+                    alert("خطأ في قراءة الملف. تأكد من أنه ملف JSON صحيح.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- المفكرات (Notes) ---
+        let currentEditingNoteId = null;
+
+        function saveNotes() {
+            localStorage.setItem('app_notes', JSON.stringify(notes));
+        }
+
+        function renderNotesList() {
+            const list = document.getElementById('notes-list');
+            const emptyMsg = document.getElementById('empty-notes-msg');
+
+            // تنظيف القائمة
+            Array.from(list.children).forEach(child => {
+                if (child.id !== 'empty-notes-msg') child.remove();
+            });
+
+            if (notes.length === 0) {
+                emptyMsg.style.display = 'block';
+                return;
+            } else {
+                emptyMsg.style.display = 'none';
+            }
+
+            notes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).forEach(note => {
+                const noteEl = document.createElement('div');
+                noteEl.className = 'bg-cardDark rounded-2xl p-4 border border-transparent hover:border-borderDark hover:bg-cardLighter transition-all duration-300 cursor-pointer tap-effect';
+                noteEl.onclick = () => openNoteEditor(note.id);
+
+                const previewText = note.content.length > 60 ? note.content.substring(0, 60) + '...' : note.content;
+                const dateOptions = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                const dateStr = new Date(note.updatedAt).toLocaleDateString('ar-EG', dateOptions);
+
+                noteEl.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-[16px] text-white line-clamp-1">${note.title || 'مذكرة بدون عنوان'}</h4>
+                        <button onclick="deleteNote('${note.id}', event)" class="text-red-400/50 hover:text-red-400 p-1 transition-colors">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </div>
+                    <p class="text-sm text-textMuted mb-3 line-clamp-2 leading-relaxed">${previewText || 'لا يوجد نص...'}</p>
+                    <div class="text-[10px] text-white/40 flex items-center gap-1">
+                        <i class="fa-regular fa-clock"></i> ${dateStr}
+                    </div>
+                `;
+                list.appendChild(noteEl);
+            });
+        }
+
+        function openNoteEditor(id = null) {
+            currentEditingNoteId = id;
+            const editor = document.getElementById('note-editor');
+            const titleInput = document.getElementById('note-title-input');
+            const contentInput = document.getElementById('note-content-input');
+
+            if (id) {
+                const note = notes.find(n => n.id === id);
+                if (note) {
+                    titleInput.value = note.title;
+                    contentInput.value = note.content;
+                }
+            } else {
+                titleInput.value = '';
+                contentInput.value = '';
+            }
+
+            editor.classList.remove('hidden');
+            setTimeout(() => {
+                editor.classList.remove('opacity-0');
+                if (!id) contentInput.focus();
+            }, 10);
+        }
+
+        function closeNoteEditor() {
+            const editor = document.getElementById('note-editor');
+            editor.classList.add('opacity-0');
+            setTimeout(() => {
+                editor.classList.add('hidden');
+                currentEditingNoteId = null;
+            }, 300);
+        }
+
+        function saveNote() {
+            const titleInput = document.getElementById('note-title-input');
+            const contentInput = document.getElementById('note-content-input');
+            const title = titleInput.value.trim();
+            const content = contentInput.value.trim();
+
+            if (!title && !content) {
+                closeNoteEditor();
+                return;
+            }
+
+            if (currentEditingNoteId) {
+                const note = notes.find(n => n.id === currentEditingNoteId);
+                if (note) {
+                    note.title = title;
+                    note.content = content;
+                    note.updatedAt = new Date().toISOString();
+                }
+            } else {
+                const newNote = {
+                    id: Date.now().toString(),
+                    title: title,
+                    content: content,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                notes.push(newNote);
+            }
+
+            saveNotes();
+            renderNotesList();
+            closeNoteEditor();
+        }
+
+        function deleteNote(id, event) {
+            event.stopPropagation();
+            if (confirm('هل أنت متأكد من حذف هذه المذكرة؟')) {
+                notes = notes.filter(n => n.id !== id);
+                saveNotes();
+                renderNotesList();
+            }
+        }
+
+        // --- الأرشيف (Archive) ---
+        function renderArchiveList() {
+            const list = document.getElementById('archive-list');
+            const emptyMsg = document.getElementById('empty-archive-msg');
+            const archivedTasks = tasks.filter(t => t.archived);
+
+            Array.from(list.children).forEach(child => {
+                if (child.id !== 'empty-archive-msg') child.remove();
+            });
+
+            if (archivedTasks.length === 0) {
+                emptyMsg.style.display = 'block';
+                return;
+            } else {
+                emptyMsg.style.display = 'none';
+            }
+
+            archivedTasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(task => {
+                const cat = categories[task.category] || categories['عام'];
+                const taskEl = document.createElement('div');
+                taskEl.className = 'bg-cardDark rounded-2xl p-4 flex justify-between items-center mb-3 border border-borderDark opacity-80';
+
+                taskEl.innerHTML = `
+                    <div class="flex items-center gap-4 flex-1">
+                        <div class="w-11 h-11 rounded-full bg-borderDark text-textMuted flex items-center justify-center shrink-0">
+                            <i class="fa-solid ${cat.icon}"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-[15px] text-textMuted line-through">${task.text}</h4>
+                            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-textMuted">
+                                <span>${task.category}</span>
+                                <span>•</span>
+                                <span>${task.date}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="unarchiveTask('${task.id}', event)" class="text-accentPurp/50 hover:text-accentPurp p-2 transition-colors" title="استعادة">
+                        <i class="fa-solid fa-box-open"></i>
+                    </button>
+                `;
+                list.appendChild(taskEl);
+            });
+        }
+
+        function unarchiveTask(id, event) {
+            event.stopPropagation();
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.archived = false;
+                saveTasks();
+                renderTasks();
+                renderArchiveList();
+            }
+        }
+
+        function clearArchive() {
+            if (confirm('هل أنت متأكد من مسح جميع المهام في الأرشيف بشكل نهائي؟')) {
+                tasks = tasks.filter(t => !t.archived);
+                saveTasks();
+                renderArchiveList();
+            }
+        }
+
+        // بدء التشغيل
+        window.onload = init;
+    </script>
+</body>
+
+</html>
