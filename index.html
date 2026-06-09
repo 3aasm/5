@@ -201,7 +201,8 @@
             color: white;
         }
 
-        body, html {
+        body,
+        html {
             height: 100%;
             width: 100%;
             margin: 0;
@@ -265,7 +266,54 @@
 
 <body class="text-textMain font-sans antialiased selection:bg-accentPurp selection:text-white">
 
-    <div id="app-container">
+    <!-- Splash Screen -->
+    <div id="splash-screen"
+        class="fixed inset-0 z-[200] bg-bgDark flex flex-col items-center justify-center transition-all duration-700 ease-in-out">
+        <div class="flex flex-col gap-6 w-56">
+            <!-- العنصر الأول -->
+            <div class="flex items-center gap-4">
+                <div id="splash-box-1"
+                    class="w-8 h-8 rounded-lg border-2 border-textMuted flex items-center justify-center transition-all duration-300 shadow-glow relative">
+                    <i class="fa-solid fa-check text-white opacity-0 transform scale-0 transition-all duration-300 text-sm"
+                        id="splash-check-1"></i>
+                </div>
+                <div class="flex-1 h-3 bg-cardLighter rounded-full overflow-hidden relative">
+                    <div id="splash-line-1"
+                        class="absolute top-0 left-0 bottom-0 w-0 bg-textMuted transition-all duration-500 rounded-full">
+                    </div>
+                </div>
+            </div>
+            <!-- العنصر الثاني -->
+            <div class="flex items-center gap-4">
+                <div id="splash-box-2"
+                    class="w-8 h-8 rounded-lg border-2 border-textMuted flex items-center justify-center transition-all duration-300 relative">
+                    <i class="fa-solid fa-check text-white opacity-0 transform scale-0 transition-all duration-300 text-sm"
+                        id="splash-check-2"></i>
+                </div>
+                <div class="flex-1 h-3 bg-cardLighter rounded-full overflow-hidden relative">
+                    <div id="splash-line-2"
+                        class="absolute top-0 left-0 bottom-0 w-0 bg-textMuted transition-all duration-500 rounded-full">
+                    </div>
+                </div>
+            </div>
+            <!-- العنصر الثالث -->
+            <div class="flex items-center gap-4">
+                <div id="splash-box-3"
+                    class="w-8 h-8 rounded-lg border-2 border-textMuted flex items-center justify-center transition-all duration-300 relative">
+                    <i class="fa-solid fa-check text-white opacity-0 transform scale-0 transition-all duration-300 text-sm"
+                        id="splash-check-3"></i>
+                </div>
+                <div class="flex-1 h-3 bg-cardLighter rounded-full overflow-hidden relative">
+                    <div id="splash-line-3"
+                        class="absolute top-0 left-0 bottom-0 w-0 bg-textMuted transition-all duration-500 rounded-full">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container"
+        style="opacity: 0; transform: scale(0.95); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
 
         <!-- منطقة المحتوى الرئيسية (قابلة للتمرير) -->
         <main id="main-content" class="flex-1 overflow-y-auto hide-scrollbar pb-24 relative">
@@ -496,19 +544,24 @@
                     </div>
 
                     <!-- المؤقت المحسن -->
-                    <div class="flex items-center gap-2 bg-[#1A1A1A] border border-borderDark px-3 py-1.5 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
-                        <div class="w-8 h-8 rounded-xl bg-accentOrange/20 text-accentOrange flex items-center justify-center text-sm shadow-[0_0_10px_rgba(237,177,136,0.2)]">
+                    <div
+                        class="flex items-center gap-2 bg-[#1A1A1A] border border-borderDark px-3 py-1.5 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
+                        <div
+                            class="w-8 h-8 rounded-xl bg-accentOrange/20 text-accentOrange flex items-center justify-center text-sm shadow-[0_0_10px_rgba(237,177,136,0.2)]">
                             <i class="fa-solid fa-stopwatch animate-pulse"></i>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-[9px] text-textMuted font-bold leading-none mb-1 text-right">الوقت المتبقي</span>
-                            <span class="text-sm font-bold text-white font-numbers leading-none text-right" id="day-countdown">00:00:00</span>
+                            <span class="text-[9px] text-textMuted font-bold leading-none mb-1 text-right">الوقت
+                                المتبقي</span>
+                            <span class="text-sm font-bold text-white font-numbers leading-none text-right"
+                                id="day-countdown">00:00:00</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- ترويسة الجدول -->
-                <div class="flex justify-between items-center text-textMuted text-xs px-2 mb-2 font-bold bg-cardDark/50 py-2 rounded-lg">
+                <div
+                    class="flex justify-between items-center text-textMuted text-xs px-2 mb-2 font-bold bg-cardDark/50 py-2 rounded-lg">
                     <span class="w-6 text-center">✓</span>
                     <span class="flex-1 text-right pr-2">المهمة</span>
                     <span class="w-[80px] text-center">التوقيت</span>
@@ -516,16 +569,20 @@
                 </div>
 
                 <!-- قائمة المخطط -->
-                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24 bg-cardDark/20 rounded-2xl p-2 border border-borderDark/50 relative flex flex-col gap-1" id="daily-plan-list">
+                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24 bg-cardDark/20 rounded-2xl p-2 border border-borderDark/50 relative flex flex-col gap-1"
+                    id="daily-plan-list">
                     <!-- سيتم حقن المهام هنا -->
                 </div>
 
                 <!-- الشريط السفلي المخصص -->
-                <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] bg-[#111111] border border-white/5 p-2 z-40 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.5)] h-[68px] flex items-center gap-2">
-                    <button onclick="addDailyPlanTask()" class="flex-1 h-full bg-accentOrange text-bgDark font-bold rounded-[1.5rem] tap-effect flex items-center justify-center gap-2 hover:bg-accentOrange/90 transition-colors">
+                <div
+                    class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] bg-[#111111] border border-white/5 p-2 z-40 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.5)] h-[68px] flex items-center gap-2">
+                    <button onclick="addDailyPlanTask()"
+                        class="flex-1 h-full bg-accentOrange text-bgDark font-bold rounded-[1.5rem] tap-effect flex items-center justify-center gap-2 hover:bg-accentOrange/90 transition-colors">
                         <i class="fa-solid fa-plus"></i> إضافة موعد
                     </button>
-                    <div class="w-[52px] h-[52px] rounded-full bg-cardLighter border border-borderDark flex items-center justify-center text-textMuted shrink-0">
+                    <div
+                        class="w-[52px] h-[52px] rounded-full bg-cardLighter border border-borderDark flex items-center justify-center text-textMuted shrink-0">
                         <i class="fa-solid fa-calendar-day"></i>
                     </div>
                 </div>
@@ -662,11 +719,14 @@
                 </div>
 
                 <!-- الشريط السفلي المخصص -->
-                <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] bg-[#111111] border border-white/5 p-2 z-40 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.5)] h-[68px] flex items-center gap-2">
-                    <button onclick="openNoteEditor()" class="flex-1 h-full bg-accentGreen text-bgDark font-bold rounded-[1.5rem] tap-effect flex items-center justify-center gap-2 hover:bg-accentGreen/90 transition-colors">
+                <div
+                    class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] bg-[#111111] border border-white/5 p-2 z-40 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.5)] h-[68px] flex items-center gap-2">
+                    <button onclick="openNoteEditor()"
+                        class="flex-1 h-full bg-accentGreen text-bgDark font-bold rounded-[1.5rem] tap-effect flex items-center justify-center gap-2 hover:bg-accentGreen/90 transition-colors">
                         <i class="fa-solid fa-plus"></i> إنشاء مفكرة جديدة
                     </button>
-                    <div class="w-[52px] h-[52px] rounded-full bg-cardLighter border border-borderDark flex items-center justify-center text-textMuted shrink-0">
+                    <div
+                        class="w-[52px] h-[52px] rounded-full bg-cardLighter border border-borderDark flex items-center justify-center text-textMuted shrink-0">
                         <i class="fa-solid fa-book-open"></i>
                     </div>
                 </div>
@@ -867,35 +927,45 @@
 
         <!-- شريط التنقل السفلي المطور (FAB Style) -->
         <nav id="main-nav" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] z-40">
-            <div class="bg-[#111111] px-2 py-2 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.5)] border border-white/5 flex justify-between items-center relative w-full h-[68px]">
+            <div
+                class="bg-[#111111] px-2 py-2 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.5)] border border-white/5 flex justify-between items-center relative w-full h-[68px]">
 
                 <button onclick="navigate('home')"
-                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="home">
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300"
+                    data-target="home">
                     <i class="fa-solid fa-house text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
                 </button>
 
                 <button onclick="handleTasksNavClick()"
-                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="tasks">
-                    <i class="fa-solid fa-check-double text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300"
+                    data-target="tasks">
+                    <i
+                        class="fa-solid fa-check-double text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
                 </button>
 
                 <!-- زر الإضافة المركزي (FAB) -->
                 <div class="flex-1 flex justify-center relative">
-                    <div class="absolute -top-[44px] w-[64px] h-[64px] bg-[#111111] rounded-full flex items-center justify-center border-t border-white/5">
-                        <button onclick="openAddTaskModal()" class="w-[50px] h-[50px] bg-white rounded-full flex items-center justify-center text-[#111111] text-[22px] shadow-[0_4px_15px_rgba(0,0,0,0.3)] tap-effect hover:scale-105 transition-transform z-50">
+                    <div
+                        class="absolute -top-[44px] w-[64px] h-[64px] bg-[#111111] rounded-full flex items-center justify-center border-t border-white/5">
+                        <button onclick="openAddTaskModal()"
+                            class="w-[50px] h-[50px] bg-white rounded-full flex items-center justify-center text-[#111111] text-[22px] shadow-[0_4px_15px_rgba(0,0,0,0.3)] tap-effect hover:scale-105 transition-transform z-50">
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
                 </div>
 
                 <button onclick="navigate('options')"
-                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="options">
-                    <i class="fa-solid fa-layer-group text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300"
+                    data-target="options">
+                    <i
+                        class="fa-solid fa-layer-group text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
                 </button>
 
                 <button onclick="navigate('stats')"
-                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300" data-target="stats">
-                    <i class="fa-solid fa-chart-simple text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300"
+                    data-target="stats">
+                    <i
+                        class="fa-solid fa-chart-simple text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
                 </button>
 
             </div>
@@ -1116,12 +1186,12 @@
             initCharts();
             renderNotesList();
             renderArchiveList();
-            
+
             checkNewDayForPlan();
             renderDailyPlan();
             updateDayCountdown();
             setInterval(updateDayCountdown, 1000);
-            
+
             navigate('home'); // الشاشة الافتراضية
             updateTimerDisplay();
         }
@@ -1145,16 +1215,16 @@
 
         function openDailyPlanFromTasks() {
             dailyPlanBackTarget = 'tasks';
-            
+
             const dailyPlanView = document.getElementById('view-daily-plan');
-            
+
             // إضافة كلاسات الأنيميشن السريع
             dailyPlanView.classList.remove('animate-fast-fade-in');
             void dailyPlanView.offsetWidth; // Trigger reflow
             dailyPlanView.classList.add('animate-fast-fade-in');
-            
+
             navigate('daily-plan');
-            
+
             // تنظيف الكلاس بعد انتهاء الأنيميشن
             setTimeout(() => {
                 dailyPlanView.classList.remove('animate-fast-fade-in');
@@ -1234,9 +1304,9 @@
 
         function renderDailyPlan() {
             const list = document.getElementById('daily-plan-list');
-            if(!list) return;
+            if (!list) return;
             list.innerHTML = '';
-            
+
             if (dailyPlan.length === 0) {
                 list.innerHTML = `
                     <div class="flex flex-col items-center justify-center h-full text-textMuted opacity-50 mt-10">
@@ -1256,7 +1326,7 @@
             dailyPlan.forEach((item) => {
                 const row = document.createElement('div');
                 row.className = `flex items-center gap-2 border-b border-white/5 py-2 transition-colors hover:bg-white/5 rounded-lg px-2 group ${item.completed ? 'opacity-50' : ''}`;
-                
+
                 row.innerHTML = `
                     <div class="w-5 h-5 rounded border ${item.completed ? 'bg-accentOrange border-accentOrange text-bgDark' : 'border-textMuted/50 text-transparent'} flex items-center justify-center shrink-0 cursor-pointer tap-effect transition-colors" onclick="toggleDailyPlan('${item.id}')">
                         <i class="fa-solid fa-check text-[10px]"></i>
@@ -1297,7 +1367,7 @@
                 item.completed = !item.completed;
                 saveDailyPlan();
                 renderDailyPlan();
-                if(item.completed && typeof triggerConfetti === 'function') triggerConfetti();
+                if (item.completed && typeof triggerConfetti === 'function') triggerConfetti();
             }
         }
 
@@ -2309,7 +2379,73 @@
         }
 
         // بدء التشغيل
-        window.onload = init;
+        window.onload = () => {
+            // تجهيز التطبيق في الخلفية
+            init();
+
+            // أنميشن شاشة البداية (Splash Screen)
+            setTimeout(() => {
+                const box1 = document.getElementById('splash-box-1');
+                const check1 = document.getElementById('splash-check-1');
+                const line1 = document.getElementById('splash-line-1');
+                if (box1) {
+                    box1.classList.remove('border-textMuted');
+                    box1.classList.add('bg-accentPurp', 'border-accentPurp');
+                    check1.classList.remove('opacity-0', 'scale-0');
+                    check1.classList.add('opacity-100', 'scale-100');
+                    line1.style.width = '100%';
+                    line1.classList.add('bg-accentPurp');
+                    line1.classList.remove('bg-textMuted');
+                }
+            }, 400);
+
+            setTimeout(() => {
+                const box2 = document.getElementById('splash-box-2');
+                const check2 = document.getElementById('splash-check-2');
+                const line2 = document.getElementById('splash-line-2');
+                if (box2) {
+                    box2.classList.remove('border-textMuted');
+                    box2.classList.add('bg-accentGreen', 'border-accentGreen');
+                    check2.classList.remove('opacity-0', 'scale-0');
+                    check2.classList.add('opacity-100', 'scale-100');
+                    line2.style.width = '100%';
+                    line2.classList.add('bg-accentGreen');
+                    line2.classList.remove('bg-textMuted');
+                }
+            }, 900);
+
+            setTimeout(() => {
+                const box3 = document.getElementById('splash-box-3');
+                const check3 = document.getElementById('splash-check-3');
+                const line3 = document.getElementById('splash-line-3');
+                if (box3) {
+                    box3.classList.remove('border-textMuted');
+                    box3.classList.add('bg-accentOrange', 'border-accentOrange');
+                    check3.classList.remove('opacity-0', 'scale-0');
+                    check3.classList.add('opacity-100', 'scale-100');
+                    line3.style.width = '100%';
+                    line3.classList.add('bg-accentOrange');
+                    line3.classList.remove('bg-textMuted');
+                }
+            }, 1400);
+
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                const appContainer = document.getElementById('app-container');
+
+                if (splash) {
+                    splash.style.opacity = '0';
+                    splash.style.transform = 'scale(1.2)';
+
+                    appContainer.style.opacity = '1';
+                    appContainer.style.transform = 'scale(1)';
+
+                    setTimeout(() => {
+                        splash.remove();
+                    }, 700);
+                }
+            }, 2100);
+        };
     </script>
 </body>
 
