@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- لون شريط الحالة (البطارية والشبكة) للهواتف -->
-    <meta name="theme-color" content="#1A1A1A">
+    <!-- لون شريط الحالة للهواتف الذكية -->
+    <meta name="theme-color" content="#0A0A0B">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>منظم المهام اليومية</title>
+    <title>مُنجِز - منظم المهام الفاخر</title>
     <!-- استدعاء Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- استدعاء خط Cairo و Tajawal -->
@@ -26,30 +26,31 @@
             theme: {
                 extend: {
                     colors: {
-                        bgDark: '#1A1A1A',      /* لون الخلفية الأساسي */
-                        cardDark: '#252525',    /* لون البطاقات */
-                        cardLighter: '#2E2E2E', /* لون فاتح قليلاً للعناصر الداخلية */
-                        accentPurp: '#9B8AF4',  /* البنفسجي المميّز */
-                        accentPurpDark: '#7A68D8',
-                        accentGreen: '#88EDAA', /* الأخضر المميّز */
-                        accentOrange: '#EDB188',/* البرتقالي المميّز */
+                        bgDark: '#0A0A0B',      /* أسود غامق فاخر مثل الصورة */
+                        cardDark: '#161719',    /* رمادي غامق للبطاقات */
+                        cardLighter: '#222426', /* أسطح أخف قليلاً */
+                        accentNeon: '#C0F82E',  /* اللون الليموني الفسفوري النيون الرئيسي من الصورة */
+                        accentNeonMuted: 'rgba(192, 248, 46, 0.15)',
+                        accentOrange: '#FF9F43',
                         textMain: '#FFFFFF',
-                        textMuted: '#9CA3AF',
-                        borderDark: '#333333'
+                        textMuted: '#8E9296',
+                        borderDark: '#282A2D'
                     },
                     fontFamily: {
                         sans: ['Tajawal', 'sans-serif'],
                         numbers: ['Cairo', 'sans-serif'],
                     },
                     boxShadow: {
-                        'glow': '0 0 15px rgba(155, 138, 244, 0.3)',
+                        'glow': '0 0 20px rgba(192, 248, 46, 0.35)',
+                        'glow-soft': '0 4px 20px rgba(0, 0, 0, 0.6)',
+                        'neon-btn': '0 0 15px rgba(192, 248, 46, 0.5)'
                     }
                 }
             }
         }
     </script>
     <style>
-        /* إخفاء شريط التمرير مع الحفاظ على إمكانية التمرير */
+        /* تخصيص مظهر شريط التمرير */
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -59,23 +60,28 @@
             scrollbar-width: none;
         }
 
-        /* تأثيرات النقر والحركة */
+        /* تأثيرات النقر والحركة المتميزة */
         .tap-effect:active {
-            transform: scale(0.96);
+            transform: scale(0.95);
         }
 
-        .transition-all-fast {
-            transition: all 0.2s ease-in-out;
+        .transition-all-premium {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* حاوية التطبيق لشاشات الكمبيوتر لتبدو كالهاتف */
-        .hourglass-flow {
-            background-size: 100% 50%;
-            background-repeat: repeat-y;
-            animation: flowDown var(--flow-duration, 5s) linear infinite;
+        /* خلفية متوهجة علوية مخفية لمحاكاة عمق واجهة MyFitnessPal */
+        .glowing-bg-layer {
+            position: absolute;
+            top: -100px;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(192, 248, 46, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+            pointer-events: none;
+            z-index: 1;
         }
 
-        /* أنميشن الصح المنجز */
+        /* أنميشن الصح المنجز الفاخر */
         @keyframes checkmark-pop {
             0% {
                 transform: scale(0);
@@ -83,7 +89,7 @@
             }
 
             50% {
-                transform: scale(1.4);
+                transform: scale(1.3);
             }
 
             100% {
@@ -94,36 +100,22 @@
 
         .custom-checkbox.checked i {
             display: block;
-            color: white;
-            font-size: 12px;
-            animation: checkmark-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            color: #0A0A0B;
+            font-size: 11px;
+            animation: checkmark-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* ستايل القائمة المنسدلة المخصصة */
-        .custom-select-options {
-            display: none;
-            position: absolute;
-            bottom: 100%;
-            left: 0;
-            right: 0;
-            background-color: #1A1A1A;
-            border: 1px solid #333;
-            border-radius: 16px;
-            margin-bottom: 8px;
-            overflow: hidden;
-            z-index: 70;
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+        /* ستايل المنيو السفلي المقعر */
+        .bottom-nav-curve {
+            background: linear-gradient(180deg, #121314 0%, #0A0A0B 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .custom-select-options.show {
-            display: block;
-            animation: slideUpFade 0.2s ease-out;
-        }
-
-        @keyframes slideUpFade {
+        /* أنميشن الظهور السريع للشاشات */
+        @keyframes screenFadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(8px);
             }
 
             to {
@@ -132,73 +124,8 @@
             }
         }
 
-        .custom-option {
-            padding: 10px 15px;
-            font-size: 13px;
-            color: #fff;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .custom-option:hover {
-            background-color: #2E2E2E;
-        }
-
-        /* أنميشن الظهور السريع */
-        @keyframes fastFadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .animate-fast-fade-in {
-            animation: fastFadeIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-
-        /* Onboarding Styles */
-        #onboarding-overlay {
-            z-index: 100;
-        }
-
-        .onboard-step {
-            display: none;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-        }
-
-        .onboard-step.active {
-            display: flex;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .interest-btn {
-            border: 2px solid #333;
-            transition: all 0.3s;
-        }
-
-        .interest-btn.selected {
-            border-color: #9B8AF4;
-            background-color: rgba(155, 138, 244, 0.2);
-            color: white;
-        }
-
-        .level-btn {
-            border: 2px solid #333;
-            transition: all 0.3s;
-        }
-
-        .level-btn.selected {
-            border-color: #88EDAA;
-            background-color: rgba(136, 237, 170, 0.2);
-            color: white;
+        .animate-screen {
+            animation: screenFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         body,
@@ -211,10 +138,10 @@
             position: fixed;
             top: 0;
             left: 0;
+            background-color: #050506;
         }
 
         body {
-            background-color: #0f0f0f;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -223,337 +150,395 @@
         #app-container {
             width: 100%;
             height: 100%;
-            max-width: 480px;
-            background-color: #1A1A1A;
+            max-width: 450px;
+            background-color: #0A0A0B;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        @media (min-width: 481px) {
+        @media (min-width: 451px) {
             #app-container {
-                height: 90vh;
-                border-radius: 40px;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-                border: 8px solid #2a2a2a;
+                height: 88vh;
+                border-radius: 44px;
+                box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 1px rgba(255, 255, 255, 0.1) inset;
+                border: 10px solid #161719;
             }
         }
 
-        /* Checkbox مخصص */
+        /* الـ Checkbox الفاخر المستوحى من الصورة */
         .custom-checkbox {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            border: 2px solid #555;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid #3E4145;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
         }
 
         .custom-checkbox.checked {
-            background-color: #9B8AF4;
-            border-color: #9B8AF4;
+            background-color: #C0F82E;
+            border-color: #C0F82E;
+            box-shadow: 0 0 10px rgba(192, 248, 46, 0.3);
         }
 
         .custom-checkbox i {
             display: none;
         }
+
+        /* الحفرة العميقة (الكونتينر المقعر) لمحاكاة عناصر الهاتف الأوسط */
+        .sunken-panel {
+            background-color: #000000;
+            box-shadow: inset 0 3px 12px rgba(0, 0, 0, 0.95), 0 1px 2px rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
     </style>
 </head>
 
-<body class="text-textMain font-sans antialiased selection:bg-accentPurp selection:text-white">
+<body class="text-textMain font-sans antialiased selection:bg-accentNeon selection:text-bgDark">
 
-    <!-- Splash Screen -->
+    <!-- شاشة البداية الذكية والمحسنة (Splash Screen) -->
     <div id="splash-screen"
         class="fixed inset-0 z-[200] bg-bgDark flex flex-col items-center justify-center transition-all duration-700 ease-in-out">
-        <div class="flex flex-col gap-6 w-56">
-            <!-- العنصر الأول -->
-            <div class="flex items-center gap-4">
-                <div id="splash-box-1"
-                    class="w-8 h-8 rounded-lg border-2 border-textMuted flex items-center justify-center transition-all duration-300 shadow-glow relative">
-                    <i class="fa-solid fa-check text-white opacity-0 transform scale-0 transition-all duration-300 text-sm"
-                        id="splash-check-1"></i>
+        <div class="flex flex-col items-center gap-8">
+            <!-- أيقونة نيون عملاقة متوهجة -->
+            <div class="w-20 h-20 rounded-3xl bg-accentNeon flex items-center justify-center shadow-glow animate-pulse">
+                <i class="fa-solid fa-bolt text-bgDark text-4xl"></i>
+            </div>
+
+            <div class="flex flex-col gap-5 w-60">
+                <!-- شريط تقدم تفاعلي يحاكي تجهيز التطبيق -->
+                <div class="flex items-center gap-4">
+                    <div id="splash-box-1"
+                        class="w-6 h-6 rounded-md border-2 border-textMuted flex items-center justify-center transition-all duration-300 relative">
+                        <i class="fa-solid fa-check text-bgDark opacity-0 transform scale-0 transition-all duration-300 text-[10px]"
+                            id="splash-check-1"></i>
+                    </div>
+                    <div class="flex-1 h-2 bg-cardDark rounded-full overflow-hidden relative">
+                        <div id="splash-line-1"
+                            class="absolute top-0 right-0 bottom-0 w-0 bg-textMuted transition-all duration-500 rounded-full">
+                        </div>
+                    </div>
                 </div>
-                <div class="flex-1 h-3 bg-cardLighter rounded-full overflow-hidden relative">
-                    <div id="splash-line-1"
-                        class="absolute top-0 left-0 bottom-0 w-0 bg-textMuted transition-all duration-500 rounded-full">
+                <div class="flex items-center gap-4">
+                    <div id="splash-box-2"
+                        class="w-6 h-6 rounded-md border-2 border-textMuted flex items-center justify-center transition-all duration-300 relative">
+                        <i class="fa-solid fa-check text-bgDark opacity-0 transform scale-0 transition-all duration-300 text-[10px]"
+                            id="splash-check-2"></i>
+                    </div>
+                    <div class="flex-1 h-2 bg-cardDark rounded-full overflow-hidden relative">
+                        <div id="splash-line-2"
+                            class="absolute top-0 right-0 bottom-0 w-0 bg-textMuted transition-all duration-500 rounded-full">
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- العنصر الثاني -->
-            <div class="flex items-center gap-4">
-                <div id="splash-box-2"
-                    class="w-8 h-8 rounded-lg border-2 border-textMuted flex items-center justify-center transition-all duration-300 relative">
-                    <i class="fa-solid fa-check text-white opacity-0 transform scale-0 transition-all duration-300 text-sm"
-                        id="splash-check-2"></i>
-                </div>
-                <div class="flex-1 h-3 bg-cardLighter rounded-full overflow-hidden relative">
-                    <div id="splash-line-2"
-                        class="absolute top-0 left-0 bottom-0 w-0 bg-textMuted transition-all duration-500 rounded-full">
-                    </div>
-                </div>
-            </div>
-            <!-- العنصر الثالث -->
-            <div class="flex items-center gap-4">
-                <div id="splash-box-3"
-                    class="w-8 h-8 rounded-lg border-2 border-textMuted flex items-center justify-center transition-all duration-300 relative">
-                    <i class="fa-solid fa-check text-white opacity-0 transform scale-0 transition-all duration-300 text-sm"
-                        id="splash-check-3"></i>
-                </div>
-                <div class="flex-1 h-3 bg-cardLighter rounded-full overflow-hidden relative">
-                    <div id="splash-line-3"
-                        class="absolute top-0 left-0 bottom-0 w-0 bg-textMuted transition-all duration-500 rounded-full">
-                    </div>
-                </div>
-            </div>
+            <span class="text-xs text-textMuted tracking-wider uppercase font-numbers opacity-80"
+                id="splash-status-text">جاري تحميل داتا الإنجاز...</span>
         </div>
     </div>
 
+    <!-- التطبيق الرئيسي -->
     <div id="app-container"
-        style="opacity: 0; transform: scale(0.95); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        style="opacity: 0; transform: scale(0.97); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);">
 
-        <!-- منطقة المحتوى الرئيسية (قابلة للتمرير) -->
-        <main id="main-content" class="flex-1 overflow-y-auto hide-scrollbar pb-24 relative">
+        <!-- طبقة التوهج العلوية المريحة للعين -->
+        <div class="glowing-bg-layer"></div>
 
-            <!-- 1. شاشة الرئيسية (Home) -->
-            <section id="view-home" class="p-6 hidden">
-                <!-- Header -->
-                <div class="flex justify-between items-center mb-6">
+        <!-- منطقة المحتوى الرئيسية (قابلة للتمرير مع إخفاء السكرول) -->
+        <main id="main-content" class="flex-1 overflow-y-auto hide-scrollbar pb-28 relative z-10">
+
+            <!-- ===================== 1. شاشة الرئيسية (Home) ===================== -->
+            <section id="view-home" class="p-6 hidden animate-screen">
+                <!-- الترويسة العليا -->
+                <div class="flex justify-between items-center mb-8">
                     <div class="flex items-center gap-3">
                         <div
-                            class="w-12 h-12 rounded-full bg-cardDark border border-accentPurp flex items-center justify-center text-xl text-accentPurp shadow-glow relative">
-                            <i class="fa-solid fa-user" id="home-avatar-icon"></i>
+                            class="w-11 h-11 rounded-2xl bg-cardDark border border-accentNeon/20 flex items-center justify-center text-xl text-accentNeon shadow-sm relative">
+                            <i class="fa-solid fa-user-astronaut" id="home-avatar-icon"></i>
                         </div>
                         <div class="flex flex-col">
-                            <span class="text-sm font-bold text-white" id="home-user-name">ضيف</span>
-                            <span
-                                class="text-[10px] text-accentGreen bg-accentGreen/10 px-2 py-0.5 rounded-full w-fit mt-0.5 font-bold hidden"
-                                id="home-user-level"></span>
+                            <span class="text-[11px] text-textMuted font-medium">مرحباً بعودتك</span>
+                            <span class="text-[15px] font-bold text-white leading-tight" id="home-user-name">ضيف</span>
                         </div>
                     </div>
-                    <div class="flex gap-4 text-xl text-textMuted">
-                        <button class="hover:text-white transition-colors" onclick="openSettings()"><i
-                                class="fa-solid fa-gear"></i></button>
+                    <div class="flex gap-2">
+                        <!-- بادج مستوى الإنتاجية الفخم -->
+                        <span
+                            class="text-[10px] text-accentNeon bg-accentNeonMuted border border-accentNeon/30 px-3 py-1 rounded-xl font-bold"
+                            id="home-user-level">🌱 مبتدئ</span>
+                        <button
+                            class="w-10 h-10 rounded-xl bg-cardDark hover:bg-cardLighter flex items-center justify-center text-textMuted hover:text-white transition-colors border border-white/5"
+                            onclick="openSettings()">
+                            <i class="fa-solid fa-sliders text-sm"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- بطاقة الترحيب المطورة -->
+                <!-- بطاقة الترحيب المطورة (تدرج عميق محاكي لبطاقة MyFitnessPal العلوية) -->
                 <div
-                    class="bg-gradient-to-tl from-[#9B8AF4] via-[#8570E5] to-[#7A68D8] rounded-[28px] p-6 shadow-glow mb-8 relative overflow-hidden flex items-center justify-between border border-white/10 group">
-                    <!-- تأثيرات إضاءة في الخلفية -->
+                    class="relative overflow-hidden rounded-[28px] p-6 mb-8 border border-white/[0.04] bg-gradient-to-br from-[#121314] via-[#161719] to-[#0A0A0B] shadow-glow-soft group">
+                    <!-- خلفية نيون متموجة داخل البطاقة للعمق الجمالي -->
                     <div
-                        class="absolute -left-12 -bottom-12 w-48 h-48 bg-white opacity-10 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700 pointer-events-none">
+                        class="absolute -left-16 -top-16 w-36 h-36 rounded-full bg-accentNeon/10 blur-2xl transition-transform duration-700 pointer-events-none group-hover:scale-125">
                     </div>
                     <div
-                        class="absolute right-0 top-0 w-32 h-32 bg-[#88EDAA] opacity-20 rounded-full blur-3xl mix-blend-overlay pointer-events-none">
+                        class="absolute -right-16 -bottom-16 w-36 h-36 rounded-full bg-accentNeonMuted blur-2xl transition-transform duration-700 pointer-events-none group-hover:scale-125">
                     </div>
 
-                    <div class="relative z-10">
-                        <div class="flex items-center gap-2 mb-1.5">
-                            <h2 class="text-2xl font-extrabold text-white tracking-tight" id="greeting-text">أهلاً بك
+                    <div class="relative z-10 flex justify-between items-center">
+                        <div class="flex flex-col gap-1.5 max-w-[70%]">
+                            <h2 class="text-xl font-extrabold text-white leading-tight" id="greeting-text">أهلاً بك 👋
                             </h2>
-                            <span class="text-2xl animate-pulse origin-bottom-right">👋</span>
+                            <p class="text-textMuted text-xs leading-relaxed">تحدي اليوم بانتظارك، ابدأ بالإنجاز وراقب
+                                تطور مؤشراتك الصحية واليومية بدقة.</p>
                         </div>
-                        <p class="text-white/90 text-[13px] font-medium leading-relaxed max-w-[180px]">اجعل يومك مليئاً
-                            بالإنجازات، خطوة بخطوة.</p>
-                    </div>
-
-                    <div
-                        class="relative z-10 shrink-0 w-14 h-14 bg-white/20 backdrop-blur-md rounded-[18px] flex items-center justify-center border border-white/30 shadow-[0_8px_16px_rgba(0,0,0,0.2)] rotate-[-8deg] group-hover:rotate-0 transition-all duration-300">
-                        <i class="fa-solid fa-rocket text-2xl text-white drop-shadow-lg"></i>
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-accentNeon flex items-center justify-center shrink-0 shadow-glow rotate-[-6deg] group-hover:rotate-0 transition-all duration-300">
+                            <i class="fa-solid fa-bolt text-2xl text-bgDark"></i>
+                        </div>
                     </div>
                 </div>
 
-                <!-- واجهة المهام العشوائية (الحفرة والساعة الرملية) -->
-                <div class="flex gap-3 mb-6 h-[88px]">
-                    <!-- المستطيل الغائر (الحفرة) -->
-                    <div
-                        class="flex-1 bg-[#0e0e0e] rounded-[22px] shadow-[inset_0_8px_24px_rgba(0,0,0,0.9)] border border-white/5 flex flex-col justify-between p-3 relative overflow-hidden">
-                        <!-- شريط علوي -->
-                        <div class="flex items-center justify-between">
-                            <div
-                                class="flex items-center gap-1.5 text-[9px] font-semibold text-white/30 uppercase tracking-widest">
-                                <i class="fa-solid fa-shuffle text-[8px]"></i>
-                                <span>عشوائي</span>
+                <!-- حزمة ملخص الأداء الدائرية المتداخلة (Concentric Progress Circle - مطابقة تماماً لشاشة MyFitnessPal) -->
+                <div class="bg-cardDark rounded-[32px] p-6 mb-6 border border-white/[0.04] shadow-glow-soft">
+                    <h3 class="text-sm font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-1.5 h-3 bg-accentNeon rounded-full"></span> ملخص الإنتاجية اليومي
+                    </h3>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <!-- الحلقات المتداخلة SVG (Concentric Circles) -->
+                        <div class="relative w-36 h-36 flex items-center justify-center shrink-0">
+                            <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+                                <!-- حلقة 1: المهام الأساسية (الخارجية - نيون) -->
+                                <circle cx="72" cy="72" r="58" stroke="#222426" stroke-width="6" fill="none" />
+                                <circle id="ring-tasks" cx="72" cy="72" r="58" stroke="#C0F82E" stroke-width="6"
+                                    fill="none" stroke-dasharray="364.4" stroke-dashoffset="364.4"
+                                    stroke-linecap="round" class="transition-all duration-1000 ease-out" />
+
+                                <!-- حلقة 2: المخطط اليومي (الوسطى - برتقالي نيون) -->
+                                <circle cx="72" cy="72" r="46" stroke="#222426" stroke-width="6" fill="none" />
+                                <circle id="ring-daily-plan" cx="72" cy="72" r="46" stroke="#FF9F43" stroke-width="6"
+                                    fill="none" stroke-dasharray="289" stroke-dashoffset="289" stroke-linecap="round"
+                                    class="transition-all duration-1000 ease-out" />
+
+                                <!-- حلقة 3: جلسات التركيز (الداخلية - أزرق نيون مائي) -->
+                                <circle cx="72" cy="72" r="34" stroke="#222426" stroke-width="6" fill="none" />
+                                <circle id="ring-focus" cx="72" cy="72" r="34" stroke="#2DCEE3" stroke-width="6"
+                                    fill="none" stroke-dasharray="213.6" stroke-dashoffset="213.6"
+                                    stroke-linecap="round" class="transition-all duration-1000 ease-out" />
+                            </svg>
+                            <!-- مركز المخطط الدائري -->
+                            <div class="text-center z-10 flex flex-col items-center">
+                                <span class="text-2xl font-extrabold text-white font-numbers tracking-tight"
+                                    id="home-overall-percentage">0%</span>
+                                <span class="text-[8px] text-textMuted font-bold uppercase tracking-wider">الأداء
+                                    العام</span>
                             </div>
-                            <div id="random-priority-badge"
-                                class="hidden text-[8px] font-bold px-2 py-0.5 rounded-full"></div>
                         </div>
-                        <!-- محتوى المهمة -->
-                        <div id="random-task-content"
-                            class="flex items-center gap-2.5 transition-all duration-500 opacity-0 transform translate-y-1">
-                            <!-- سيتم حقن المهمة هنا -->
+
+                        <!-- إحصائيات المؤشرات على اليمين بالتفصيل والتقييم (مطابقة لتفاصيل الصورة اليمينية) -->
+                        <div class="flex-1 w-full space-y-3.5">
+                            <!-- مؤشر المهام -->
+                            <div
+                                class="flex justify-between items-center bg-[#1D1E21] p-2.5 rounded-xl border border-white/[0.02]">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-accentNeon"></span>
+                                    <span class="text-xs text-textMuted font-medium">المهام اليومية</span>
+                                </div>
+                                <span class="text-xs font-bold text-white font-numbers" id="stat-lbl-tasks">0/0</span>
+                                <span
+                                    class="text-[9px] font-bold text-accentNeon bg-accentNeonMuted px-2 py-0.5 rounded-md"
+                                    id="stat-eval-tasks">مقبول</span>
+                            </div>
+
+                            <!-- مؤصل المخطط اليومي -->
+                            <div
+                                class="flex justify-between items-center bg-[#1D1E21] p-2.5 rounded-xl border border-white/[0.02]">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-accentOrange"></span>
+                                    <span class="text-xs text-textMuted font-medium">المواعيد المنجزة</span>
+                                </div>
+                                <span class="text-xs font-bold text-white font-numbers" id="stat-lbl-plan">0/0</span>
+                                <span
+                                    class="text-[9px] font-bold text-accentOrange bg-[#FF9F43]/10 px-2 py-0.5 rounded-md"
+                                    id="stat-eval-plan">متوسط</span>
+                            </div>
+
+                            <!-- مؤشر جلسات التركيز -->
+                            <div
+                                class="flex justify-between items-center bg-[#1D1E21] p-2.5 rounded-xl border border-white/[0.02]">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-[#2DCEE3]"></span>
+                                    <span class="text-xs text-textMuted font-medium">دقائق التركيز</span>
+                                </div>
+                                <span class="text-xs font-bold text-white font-numbers" id="stat-lbl-focus">0 د</span>
+                                <span class="text-[9px] font-bold text-[#2DCEE3] bg-[#2DCEE3]/10 px-2 py-0.5 rounded-md"
+                                    id="stat-eval-focus">ممتاز</span>
+                            </div>
                         </div>
                     </div>
-                    <!-- الساعة الرملية العمودية -->
+                </div>
+
+                <!-- شريط المهام العشوائية المبتكر (الحفرة المقعرة والساعة الرملية نيون - محاكاة لتصميم الهاتف الأوسط) -->
+                <div class="flex gap-4 mb-6 h-[95px]">
+                    <!-- الحفرة العميقة الفاخرة -->
                     <div
-                        class="w-8 bg-[#121212] rounded-[20px] shadow-[inset_0_5px_15px_rgba(0,0,0,0.8)] border border-borderDark relative overflow-hidden flex flex-col justify-end p-1">
-                        <div id="hourglass-bar" class="w-full bg-accentPurp rounded-xl transition-all shadow-glow"
+                        class="flex-1 sunken-panel rounded-[24px] flex flex-col justify-between p-4 relative overflow-hidden transition-all duration-300">
+                        <!-- ترويسة -->
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="text-[9px] font-bold text-accentNeon tracking-widest uppercase flex items-center gap-1.5">
+                                <i class="fa-solid fa-wand-magic-sparkles text-[10px] animate-pulse"></i> مقترح عشوائي
+                                ذكي
+                            </span>
+                            <div id="random-priority-badge" class="hidden text-[8px] font-bold px-2 py-0.5 rounded-lg">
+                            </div>
+                        </div>
+                        <!-- تفاصيل المهمة -->
+                        <div id="random-task-content"
+                            class="flex items-center gap-3 transition-all duration-300 opacity-0 transform translate-y-1">
+                            <!-- المحتوى التفاعلي المولد بالجافاسكريبت -->
+                        </div>
+                    </div>
+
+                    <!-- عمود تعبئة الإنجاز التفاعلي (الساعة الرملية نيون من الصورة) -->
+                    <div
+                        class="w-9 sunken-panel rounded-[20px] relative overflow-hidden flex flex-col justify-end p-1.5 shrink-0">
+                        <div id="hourglass-bar"
+                            class="w-full bg-accentNeon rounded-[12px] transition-all duration-500 shadow-glow"
                             style="height: 100%;"></div>
                     </div>
                 </div>
-
-                <!-- ملخص اليوم -->
-                <div class="bg-cardDark rounded-3xl p-6 mb-6 flex flex-col items-center">
-                    <h3 class="text-lg font-bold mb-4 text-center">إنجاز اليوم</h3>
-                    <!-- دائرة التقدم المصغرة -->
-                    <div class="relative w-32 h-32 flex items-center justify-center">
-                        <svg class="absolute inset-0 w-full h-full transform -rotate-90">
-                            <circle cx="64" cy="64" r="56" stroke="#333" stroke-width="8" fill="none" />
-                            <circle id="home-progress-circle" cx="64" cy="64" r="56" stroke="#88EDAA" stroke-width="8"
-                                fill="none" stroke-dasharray="351" stroke-dashoffset="351" stroke-linecap="round"
-                                class="transition-all duration-1000 ease-out" />
-                        </svg>
-                        <div class="text-2xl font-bold font-numbers flex flex-col items-center">
-                            <span id="home-progress-text">0%</span>
-                        </div>
-                    </div>
-                    <div class="mt-4 flex gap-6 text-sm text-center">
-                        <div>
-                            <span class="block text-textMuted">المتبقي</span>
-                            <span class="font-bold text-lg" id="home-tasks-left">0</span>
-                        </div>
-                        <div>
-                            <span class="block text-textMuted">المنجز</span>
-                            <span class="font-bold text-lg text-accentGreen" id="home-tasks-done">0</span>
-                        </div>
-                    </div>
-                </div>
             </section>
 
-            <!-- 2. شاشة المهام (Tasks) -->
-            <section id="view-tasks" class="p-6 hidden h-full flex flex-col relative">
-                <div class="flex justify-between items-start mb-6">
-                    <div class="flex gap-2 w-10">
-                        <!-- زر الأرشيف -->
-                        <button onclick="navigate('archive')"
-                            class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-all duration-300">
-                            <i class="fa-solid fa-box-archive"></i>
-                        </button>
+            <!-- ===================== 2. شاشة المهام (Tasks) ===================== -->
+            <section id="view-tasks" class="p-6 hidden h-full flex flex-col relative animate-screen">
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="navigate('archive')"
+                        class="w-10 h-10 rounded-xl bg-cardDark text-textMuted flex items-center justify-center border border-white/5 tap-effect shrink-0 hover:text-white transition-colors">
+                        <i class="fa-solid fa-box-archive"></i>
+                    </button>
+                    <div class="text-center">
+                        <h2 class="text-xl font-extrabold text-white">مهامي اليومية</h2>
+                        <p class="text-textMuted text-[11px] mt-1" id="current-date-text"></p>
                     </div>
-                    <!-- العنوان -->
-                    <div class="text-center flex-1">
-                        <h2 class="text-2xl font-bold">مهام اليوم</h2>
-                        <p class="text-textMuted text-sm mt-1" id="current-date-text"></p>
-                    </div>
-                    <div class="flex gap-2 w-10 justify-end">
-                        <!-- زر الفلترة/التصنيف -->
-                        <button onclick="cycleTaskFilter()"
-                            class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-all duration-300 relative overflow-hidden"
-                            id="task-filter-btn">
-                            <i class="fa-solid fa-filter transition-transform duration-300" id="task-filter-icon"></i>
-                        </button>
-                    </div>
+                    <button onclick="cycleTaskFilter()"
+                        class="w-10 h-10 rounded-xl bg-cardDark text-textMuted flex items-center justify-center border border-white/5 tap-effect shrink-0 hover:text-white transition-all"
+                        id="task-filter-btn">
+                        <i class="fa-solid fa-filter" id="task-filter-icon"></i>
+                    </button>
                 </div>
 
-                <!-- شريط الأيام الأفقي -->
+                <!-- شريط الأيام الأفقي الاحترافي (مماثل للهاتف الأوسط تماماً) -->
                 <div class="flex overflow-x-auto hide-scrollbar gap-3 mb-6 pb-2" id="calendar-strip">
-                    <!-- سيتم تعبئته بالجافاسكربت -->
+                    <!-- سيتم تعبئته ديناميكياً لتأثير النيون عند الضغط -->
                 </div>
 
-                <!-- قائمة المهام -->
-                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24" id="tasks-list">
-                    <!-- سيتم تعبئته بالجافاسكربت -->
-                    <div class="text-center text-textMuted mt-10" id="empty-tasks-msg">
-                        <i class="fa-solid fa-clipboard-list text-4xl mb-3 opacity-50"></i>
-                        <p>لا توجد مهام مضافة لهذا اليوم.</p>
+                <!-- قائمة المهام المنسدلة -->
+                <div class="flex-1 overflow-y-auto hide-scrollbar pb-16 space-y-3" id="tasks-list">
+                    <!-- سيتم حقن المهام برمجياً -->
+                    <div class="text-center text-textMuted py-12" id="empty-tasks-msg">
+                        <i class="fa-solid fa-clipboard-list text-5xl mb-4 text-white/10"></i>
+                        <p class="text-sm">لا توجد مهام مضافة لهذا اليوم.</p>
+                        <p class="text-xs text-textMuted/60 mt-1">اضغط على الزر الزائد بالأسفل لإضافة هدفك الأول.</p>
                     </div>
                 </div>
             </section>
 
-            <!-- شاشة الخيارات (المزيد) -->
-            <section id="view-options" class="p-6 hidden h-full flex flex-col relative">
+            <!-- ===================== شاشة الخيارات (المزيد) ===================== -->
+            <section id="view-options" class="p-6 hidden h-full flex flex-col relative animate-screen">
                 <div class="text-center mb-8">
-                    <h2 class="text-2xl font-bold">المزيد</h2>
-                    <p class="text-textMuted text-sm mt-1">خيارات إضافية للتطبيق</p>
+                    <h2 class="text-xl font-extrabold text-white">المزيد من الخيارات</h2>
+                    <p class="text-textMuted text-xs mt-1">أدوات إضافية لتنظيم يومك وزيادة كفاءتك</p>
                 </div>
 
                 <div class="flex flex-col gap-4">
-                    <!-- خيار 1: ترتيب/تنظيم يومي -->
+                    <!-- خيار 1: المخطط اليومي -->
                     <button onclick="navigate('daily-plan')"
-                        class="bg-cardDark rounded-3xl p-5 flex items-center justify-between border border-borderDark hover:border-accentOrange hover:bg-cardLighter transition-colors tap-effect group">
+                        class="bg-cardDark rounded-[24px] p-5 flex items-center justify-between border border-white/[0.02] hover:border-accentNeon/20 hover:bg-cardLighter transition-all-premium tap-effect group">
                         <div class="flex items-center gap-4">
                             <div
-                                class="w-12 h-12 rounded-full bg-accentOrange/20 text-accentOrange flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                class="w-12 h-12 rounded-2xl bg-[#FF9F43]/10 text-accentOrange flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
                                 <i class="fa-solid fa-calendar-day"></i>
                             </div>
                             <div class="text-right">
-                                <h3 class="font-bold text-white text-[15px]">مخطط يومي</h3>
-                                <p class="text-[11px] text-textMuted mt-0.5">جدول مهامك بأوقات محددة</p>
+                                <h3 class="font-bold text-white text-[15px]">المخطط اليومي</h3>
+                                <p class="text-[11px] text-textMuted mt-0.5">جدول مواعيد دقيق وتنبيهات مستمرة</p>
                             </div>
                         </div>
                         <div
-                            class="w-8 h-8 rounded-full bg-borderDark flex items-center justify-center text-textMuted group-hover:bg-accentOrange group-hover:text-bgDark transition-colors">
-                            <i class="fa-solid fa-chevron-left text-sm"></i>
+                            class="w-8 h-8 rounded-xl bg-cardLighter flex items-center justify-center text-textMuted group-hover:bg-accentNeon group-hover:text-bgDark transition-all duration-300">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
                         </div>
                     </button>
 
-                    <!-- خيار 2: مفكراتي -->
+                    <!-- خيار 2: المفكرة الشخصية -->
                     <button onclick="navigate('notes')"
-                        class="bg-cardDark rounded-3xl p-5 flex items-center justify-between border border-borderDark hover:border-accentGreen hover:bg-cardLighter transition-colors tap-effect group">
+                        class="bg-cardDark rounded-[24px] p-5 flex items-center justify-between border border-white/[0.02] hover:border-accentNeon/20 hover:bg-cardLighter transition-all-premium tap-effect group">
                         <div class="flex items-center gap-4">
                             <div
-                                class="w-12 h-12 rounded-full bg-accentGreen/20 text-accentGreen flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                class="w-12 h-12 rounded-2xl bg-[#2DCEE3]/10 text-[#2DCEE3] flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
                                 <i class="fa-solid fa-book-open"></i>
                             </div>
                             <div class="text-right">
-                                <h3 class="font-bold text-white text-[15px]">مفكراتي</h3>
-                                <p class="text-[11px] text-textMuted mt-0.5">سجل أفكارك وملاحظاتك</p>
+                                <h3 class="font-bold text-white text-[15px]">المفكرات والأفكار</h3>
+                                <p class="text-[11px] text-textMuted mt-0.5">سجل أفكارك، يومياتك وخططك المستقبلية</p>
                             </div>
                         </div>
                         <div
-                            class="w-8 h-8 rounded-full bg-borderDark flex items-center justify-center text-textMuted group-hover:bg-accentGreen group-hover:text-bgDark transition-colors">
-                            <i class="fa-solid fa-chevron-left text-sm"></i>
+                            class="w-8 h-8 rounded-xl bg-cardLighter flex items-center justify-center text-textMuted group-hover:bg-accentNeon group-hover:text-bgDark transition-all duration-300">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
                         </div>
                     </button>
 
                     <!-- خيار 3: فضاء التركيز -->
                     <button onclick="navigate('timer')"
-                        class="bg-cardDark rounded-3xl p-5 flex items-center justify-between border border-borderDark hover:border-accentPurp hover:bg-cardLighter transition-colors tap-effect group">
+                        class="bg-cardDark rounded-[24px] p-5 flex items-center justify-between border border-white/[0.02] hover:border-accentNeon/20 hover:bg-cardLighter transition-all-premium tap-effect group">
                         <div class="flex items-center gap-4">
                             <div
-                                class="w-12 h-12 rounded-full bg-accentPurp/20 text-accentPurp flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                class="w-12 h-12 rounded-2xl bg-accentNeonMuted text-accentNeon flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
                                 <i class="fa-solid fa-stopwatch"></i>
                             </div>
                             <div class="text-right">
                                 <h3 class="font-bold text-white text-[15px]">فضاء التركيز</h3>
-                                <p class="text-[11px] text-textMuted mt-0.5">حدد وقتك وأنجز أكثر</p>
+                                <p class="text-[11px] text-textMuted mt-0.5">تقنية بومودورو لحساب ساعات تركيزك والعمل
+                                    المتقطع</p>
                             </div>
                         </div>
                         <div
-                            class="w-8 h-8 rounded-full bg-borderDark flex items-center justify-center text-textMuted group-hover:bg-accentPurp group-hover:text-white transition-colors">
-                            <i class="fa-solid fa-chevron-left text-sm"></i>
+                            class="w-8 h-8 rounded-xl bg-cardLighter flex items-center justify-center text-textMuted group-hover:bg-accentNeon group-hover:text-bgDark transition-all duration-300">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
                         </div>
                     </button>
                 </div>
             </section>
 
-            <!-- شاشة المخطط اليومي (Daily Plan) -->
-            <section id="view-daily-plan" class="p-6 hidden h-full flex flex-col relative">
+            <!-- ===================== شاشة المخطط اليومي (Daily Plan) ===================== -->
+            <section id="view-daily-plan" class="p-6 hidden h-full flex flex-col relative animate-screen">
                 <div class="flex justify-between items-center mb-6 w-full">
-                    <!-- العنوان وزر العودة -->
                     <div class="flex items-center gap-3">
                         <button onclick="navigateDailyPlanBack()"
-                            class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-colors hover:text-white hover:bg-cardLighter group">
-                            <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                            class="w-10 h-10 rounded-xl bg-cardDark text-textMuted flex items-center justify-center border border-white/5 tap-effect shrink-0 hover:text-white transition-colors">
+                            <i class="fa-solid fa-arrow-right"></i>
                         </button>
-                        <h2 class="text-2xl font-bold">مخطط يومي</h2>
+                        <h2 class="text-xl font-extrabold text-white">المخطط اليومي</h2>
                     </div>
 
-                    <!-- المؤقت المحسن -->
-                    <div
-                        class="flex items-center gap-2 bg-[#1A1A1A] border border-borderDark px-3 py-1.5 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
+                    <!-- عداد الوقت التنازلي المطور مع نيون وهج -->
+                    <div class="flex items-center gap-2 bg-cardDark border border-white/5 px-3 py-1.5 rounded-2xl">
                         <div
-                            class="w-8 h-8 rounded-xl bg-accentOrange/20 text-accentOrange flex items-center justify-center text-sm shadow-[0_0_10px_rgba(237,177,136,0.2)]">
-                            <i class="fa-solid fa-stopwatch animate-pulse"></i>
+                            class="w-6 h-6 rounded-lg bg-[#FF9F43]/10 text-accentOrange flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-hourglass-half animate-pulse"></i>
                         </div>
-                        <div class="flex flex-col">
-                            <span class="text-[9px] text-textMuted font-bold leading-none mb-1 text-right">الوقت
-                                المتبقي</span>
-                            <span class="text-sm font-bold text-white font-numbers leading-none text-right"
+                        <div class="flex flex-col text-right">
+                            <span class="text-[8px] text-textMuted leading-none mb-0.5">متبقي لليوم</span>
+                            <span class="text-xs font-bold text-white font-numbers leading-none"
                                 id="day-countdown">00:00:00</span>
                         </div>
                     </div>
@@ -561,534 +546,540 @@
 
                 <!-- ترويسة الجدول -->
                 <div
-                    class="flex justify-between items-center text-textMuted text-xs px-2 mb-2 font-bold bg-cardDark/50 py-2 rounded-lg">
+                    class="flex justify-between items-center text-textMuted text-[10px] px-3 mb-2 font-bold uppercase tracking-wider">
                     <span class="w-6 text-center">✓</span>
-                    <span class="flex-1 text-right pr-2">المهمة</span>
-                    <span class="w-[80px] text-center">التوقيت</span>
-                    <span class="w-8"></span> <!-- للحذف -->
+                    <span class="flex-1 text-right pr-2">الموعد / الحدث</span>
+                    <span class="w-[85px] text-center">الوقت المحدد</span>
+                    <span class="w-8"></span>
                 </div>
 
-                <!-- قائمة المخطط -->
-                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24 bg-cardDark/20 rounded-2xl p-2 border border-borderDark/50 relative flex flex-col gap-1"
+                <!-- قائمة المواعيد المخططة (تم إعادة برمجتها لتطابق أسلوب الشاشة الثالثة في الهاتف) -->
+                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24 bg-cardDark/40 rounded-3xl p-3 border border-white/[0.02] flex flex-col gap-2"
                     id="daily-plan-list">
-                    <!-- سيتم حقن المهام هنا -->
+                    <!-- سيتم التعبئة ديناميكياً -->
                 </div>
 
-                <!-- الشريط السفلي المخصص -->
+                <!-- زر الإضافة السفلي الجميل مخصص للمخطط -->
                 <div
-                    class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] bg-[#111111] border border-white/5 p-2 z-40 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.5)] h-[68px] flex items-center gap-2">
+                    class="fixed bottom-2 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[390px] bg-[#121314] border border-white/5 p-2 z-40 rounded-[24px] shadow-glow-soft h-[66px] flex items-center gap-2">
                     <button onclick="addDailyPlanTask()"
-                        class="flex-1 h-full bg-accentOrange text-bgDark font-bold rounded-[1.5rem] tap-effect flex items-center justify-center gap-2 hover:bg-accentOrange/90 transition-colors">
-                        <i class="fa-solid fa-plus"></i> إضافة موعد
+                        class="flex-1 h-full bg-accentNeon text-bgDark font-extrabold text-sm rounded-xl tap-effect flex items-center justify-center gap-2 hover:bg-accentNeon/90 transition-colors">
+                        <i class="fa-solid fa-plus"></i> إضافة موعد جديد
                     </button>
                     <div
-                        class="w-[52px] h-[52px] rounded-full bg-cardLighter border border-borderDark flex items-center justify-center text-textMuted shrink-0">
+                        class="w-[50px] h-[50px] rounded-xl bg-cardLighter border border-white/5 flex items-center justify-center text-textMuted shrink-0">
                         <i class="fa-solid fa-calendar-day"></i>
                     </div>
                 </div>
             </section>
 
-            <!-- 3. شاشة المؤقت (Focus/Timer) -->
-            <section id="view-timer" class="p-6 hidden h-full flex flex-col relative">
-                <div class="flex items-center gap-4 mb-6">
+            <!-- ===================== 3. شاشة المؤقت (Focus/Timer) ===================== -->
+            <section id="view-timer" class="p-6 hidden h-full flex flex-col relative animate-screen">
+                <div class="flex items-center gap-4 mb-8">
                     <button onclick="navigate('options')"
-                        class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-colors hover:text-white">
+                        class="w-10 h-10 rounded-xl bg-cardDark text-textMuted flex items-center justify-center border border-white/5 tap-effect shrink-0 hover:text-white transition-colors">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <div class="text-center flex-1 pl-10">
-                        <h2 class="text-2xl font-bold">فضاء التركيز</h2>
-                        <p class="text-textMuted text-sm mt-1">حدد وقتك وأنجز أكثر</p>
-                    </div>
+                    <h2 class="text-xl font-extrabold text-white text-center flex-1 pr-10">فضاء التركيز</h2>
                 </div>
 
-                <div class="flex flex-col items-center justify-center flex-1 pb-20">
-                    <!-- المؤقت الدائري الكبير -->
-                    <div class="relative w-72 h-72 flex items-center justify-center mb-12">
+                <div class="flex flex-col items-center justify-center flex-1 pb-16">
+                    <!-- المؤقت الدائري الكبير بنبرة نيون فخمة جداً -->
+                    <div class="relative w-64 h-64 flex items-center justify-center mb-10">
                         <svg class="absolute inset-0 w-full h-full transform -rotate-90">
-                            <circle cx="144" cy="144" r="130" stroke="#252525" stroke-width="10" fill="none" />
-                            <!-- المحيط = 2 * pi * 130 = ~816 -->
-                            <circle id="timer-ring" cx="144" cy="144" r="130" stroke="#9B8AF4" stroke-width="10"
-                                fill="none" stroke-dasharray="816.8" stroke-dashoffset="0" stroke-linecap="round"
+                            <circle cx="128" cy="128" r="114" stroke="#161719" stroke-width="8" fill="none" />
+                            <circle id="timer-ring" cx="128" cy="128" r="114" stroke="#C0F82E" stroke-width="8"
+                                fill="none" stroke-dasharray="716.2" stroke-dashoffset="0" stroke-linecap="round"
                                 class="transition-all duration-1000 linear" />
                         </svg>
-                        <div class="flex flex-col items-center">
-                            <div class="text-7xl font-bold font-numbers text-white tracking-widest" id="timer-display">
-                                25:00
-                            </div>
-                            <div class="text-accentPurp mt-2 font-bold" id="timer-mode-text">وقت العمل</div>
+                        <div class="flex flex-col items-center z-10">
+                            <div class="text-5xl font-extrabold font-numbers text-white tracking-widest leading-none"
+                                id="timer-display">25:00</div>
+                            <div class="text-accentNeon text-[11px] font-bold mt-3 tracking-widest uppercase bg-accentNeonMuted px-3 py-1 rounded-full border border-accentNeon/20"
+                                id="timer-mode-text">وقت العمل والتركيز</div>
                         </div>
                     </div>
 
-                    <!-- أزرار التحكم -->
-                    <div class="flex items-center justify-center gap-6 w-full px-4">
+                    <!-- أزرار التحكم الفاخرة -->
+                    <div class="flex items-center justify-center gap-4 w-full px-6">
                         <button onclick="resetTimer()"
-                            class="w-14 h-14 rounded-full bg-cardDark text-textMuted hover:text-white flex items-center justify-center text-xl tap-effect transition-colors">
+                            class="w-12 h-12 rounded-xl bg-cardDark text-textMuted hover:text-white flex items-center justify-center text-lg border border-white/5 tap-effect transition-colors">
                             <i class="fa-solid fa-rotate-right"></i>
                         </button>
                         <button id="btn-start-timer" onclick="toggleTimer()"
-                            class="flex-1 py-4 rounded-full bg-accentPurp text-white font-bold text-xl shadow-glow tap-effect transition-transform flex items-center justify-center gap-2">
+                            class="flex-1 py-4 rounded-2xl bg-accentNeon text-bgDark font-extrabold text-lg shadow-neon-btn tap-effect transition-all flex items-center justify-center gap-2">
                             <i class="fa-solid fa-play" id="timer-icon"></i>
-                            <span id="timer-btn-text">ابدأ</span>
+                            <span id="timer-btn-text">ابدأ الجلسة</span>
                         </button>
                         <button onclick="switchTimerMode()"
-                            class="w-14 h-14 rounded-full bg-cardDark text-textMuted hover:text-white flex items-center justify-center text-xl tap-effect transition-colors">
+                            class="w-12 h-12 rounded-xl bg-cardDark text-textMuted hover:text-white flex items-center justify-center text-lg border border-white/5 tap-effect transition-colors">
                             <i class="fa-solid fa-mug-hot"></i>
                         </button>
                     </div>
 
-                    <!-- خيارات الوقت -->
-                    <div class="flex justify-center gap-3 mt-10">
+                    <!-- خيارات الوقت المحسنة -->
+                    <div class="flex justify-center gap-2.5 mt-8">
                         <button onclick="setTimerDuration(25)"
-                            class="px-4 py-1.5 rounded-full bg-cardDark text-xs text-textMuted hover:bg-cardLighter hover:text-white transition-colors border border-borderDark">25
+                            class="px-4 py-2 rounded-xl bg-cardDark text-xs text-textMuted hover:bg-cardLighter hover:text-white transition-colors border border-white/5 font-bold">25
                             دقيقة</button>
                         <button onclick="setTimerDuration(15)"
-                            class="px-4 py-1.5 rounded-full bg-cardDark text-xs text-textMuted hover:bg-cardLighter hover:text-white transition-colors border border-borderDark">15
+                            class="px-4 py-2 rounded-xl bg-cardDark text-xs text-textMuted hover:bg-cardLighter hover:text-white transition-colors border border-white/5 font-bold">15
                             دقيقة</button>
                         <button onclick="setTimerDuration(5)"
-                            class="px-4 py-1.5 rounded-full bg-cardDark text-xs text-textMuted hover:bg-cardLighter hover:text-white transition-colors border border-borderDark">5
+                            class="px-4 py-2 rounded-xl bg-cardDark text-xs text-textMuted hover:bg-cardLighter hover:text-white transition-colors border border-white/5 font-bold">5
                             دقائق</button>
                     </div>
                 </div>
             </section>
 
-            <!-- 4. شاشة الإحصائيات (Stats) -->
-            <section id="view-stats" class="p-6 hidden">
+            <!-- ===================== 4. شاشة الإحصائيات والتقارير ===================== -->
+            <section id="view-stats" class="p-6 hidden animate-screen">
                 <div class="text-center mb-8">
-                    <h2 class="text-2xl font-bold">التقارير</h2>
-                    <p class="text-textMuted text-sm mt-1">نظرة عامة على أدائك</p>
+                    <h2 class="text-xl font-extrabold text-white">تحليل الكفاءة والأداء</h2>
+                    <p class="text-textMuted text-xs mt-1">تقارير دقيقة لمستوى استهلاك طاقتك وإنجازاتك</p>
                 </div>
 
-                <!-- إحصائيات سريعة -->
+                <!-- بطاقات الإحصاء الفاخرة ثنائية الأبعاد -->
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-cardDark rounded-3xl p-5 flex flex-col items-center justify-center">
-                        <div class="text-3xl font-bold font-numbers text-accentGreen mb-1" id="stat-total-done">0</div>
-                        <div class="text-xs text-textMuted">المهام المنجزة</div>
-                    </div>
-                    <div class="bg-cardDark rounded-3xl p-5 flex flex-col items-center justify-center">
-                        <div class="text-3xl font-bold font-numbers text-accentPurp mb-1" id="stat-completion-rate">0%
+                    <div
+                        class="bg-cardDark rounded-[24px] p-5 flex flex-col items-center justify-center border border-white/[0.02]">
+                        <div class="text-3xl font-extrabold font-numbers text-accentNeon mb-1" id="stat-total-done">0
                         </div>
-                        <div class="text-xs text-textMuted">معدل الإنجاز</div>
+                        <div class="text-[11px] text-textMuted font-bold">المهام المنجزة</div>
+                    </div>
+                    <div
+                        class="bg-cardDark rounded-[24px] p-5 flex flex-col items-center justify-center border border-white/[0.02]">
+                        <div class="text-3xl font-extrabold font-numbers text-accentOrange mb-1"
+                            id="stat-completion-rate">0%</div>
+                        <div class="text-[11px] text-textMuted font-bold">معدل الإنجاز العام</div>
                     </div>
                 </div>
 
-                <!-- الرسم البياني الأسبوعي (Bar) -->
-                <div class="bg-cardDark rounded-3xl p-5 mb-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-sm">أداء الأسبوع</h3>
+                <!-- أداء الأسبوع (Bar chart) -->
+                <div class="bg-cardDark rounded-[28px] p-5 mb-6 border border-white/[0.02]">
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="font-bold text-sm text-white">إنجاز الأسبوع الحالي</h3>
                         <i class="fa-solid fa-chart-column text-textMuted"></i>
                     </div>
-                    <div class="h-48 w-full">
+                    <div class="h-44 w-full">
                         <canvas id="weeklyChart"></canvas>
                     </div>
                 </div>
 
-                <!-- الرسم البياني للتصنيفات (Doughnut) -->
-                <div class="bg-cardDark rounded-3xl p-5 mb-6">
+                <!-- توزيع المهام والتصنيفات (Doughnut chart) -->
+                <div class="bg-cardDark rounded-[28px] p-5 mb-6 border border-white/[0.02]">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-sm">توزيع المهام</h3>
+                        <h3 class="font-bold text-sm text-white">التصنيفات المفضلة لديك</h3>
                         <i class="fa-solid fa-chart-pie text-textMuted"></i>
                     </div>
-                    <div class="relative h-48 w-full flex items-center justify-center">
+                    <div class="relative h-44 w-full flex items-center justify-center">
                         <canvas id="categoryChart"></canvas>
-                        <!-- مركز الدائرة -->
+                        <!-- مبيت النص في المركز -->
                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none flex-col">
-                            <span class="text-2xl font-bold font-numbers" id="stat-total-tasks">0</span>
-                            <span class="text-[10px] text-textMuted">إجمالي المهام</span>
+                            <span class="text-2xl font-extrabold font-numbers text-white" id="stat-total-tasks">0</span>
+                            <span class="text-[9px] text-textMuted uppercase tracking-wider font-bold">إجمالي
+                                المهام</span>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 5. شاشة المفكرات (Notes) -->
-            <section id="view-notes" class="p-6 hidden h-full flex flex-col relative">
+            <!-- ===================== 5. شاشة المفكرات (Notes) ===================== -->
+            <section id="view-notes" class="p-6 hidden h-full flex flex-col relative animate-screen">
                 <div class="flex items-center gap-4 mb-6">
                     <button onclick="navigate('options')"
-                        class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-colors hover:text-white group">
-                        <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                        class="w-10 h-10 rounded-xl bg-cardDark text-textMuted flex items-center justify-center border border-white/5 tap-effect shrink-0 hover:text-white transition-colors">
+                        <i class="fa-solid fa-arrow-right"></i>
                     </button>
-                    <h2 class="text-2xl font-bold">المفكرات</h2>
+                    <h2 class="text-xl font-extrabold text-white">سجل أفكارك اليومية</h2>
                 </div>
-                <!-- قائمة المذكرات -->
+
                 <div class="flex-1 overflow-y-auto hide-scrollbar pb-24 grid grid-cols-1 gap-4 content-start"
                     id="notes-list">
-                    <!-- سيتم تعبئته بالجافاسكربت -->
-                    <div class="text-center text-textMuted mt-10 w-full" id="empty-notes-msg">
-                        <i class="fa-solid fa-book-open text-4xl mb-3 opacity-50"></i>
-                        <p>لا توجد مذكرات، ابدأ بكتابة أفكارك.</p>
+                    <!-- الملاحظات يتم تعبئتها ديناميكياً -->
+                    <div class="text-center text-textMuted py-16 w-full" id="empty-notes-msg">
+                        <i class="fa-solid fa-note-sticky text-5xl mb-4 text-white/10"></i>
+                        <p class="text-sm">لم تسجل أي فكرة بعد.</p>
+                        <p class="text-xs text-textMuted/60 mt-1">الأفكار العظيمة تبدأ دائماً بكلمة بسيطة.</p>
                     </div>
                 </div>
 
-                <!-- الشريط السفلي المخصص -->
+                <!-- محرك الإضافة الفاخر السفلي للملاحظات -->
                 <div
-                    class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] bg-[#111111] border border-white/5 p-2 z-40 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.5)] h-[68px] flex items-center gap-2">
+                    class="fixed bottom-2 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[390px] bg-[#121314] border border-white/5 p-2 z-40 rounded-[24px] shadow-glow-soft h-[66px] flex items-center gap-2">
                     <button onclick="openNoteEditor()"
-                        class="flex-1 h-full bg-accentGreen text-bgDark font-bold rounded-[1.5rem] tap-effect flex items-center justify-center gap-2 hover:bg-accentGreen/90 transition-colors">
-                        <i class="fa-solid fa-plus"></i> إنشاء مفكرة جديدة
+                        class="flex-1 h-full bg-[#2DCEE3] text-bgDark font-extrabold text-sm rounded-xl tap-effect flex items-center justify-center gap-2 hover:bg-[#2DCEE3]/90 transition-colors">
+                        <i class="fa-solid fa-plus"></i> تدوين ملاحظة جديدة
                     </button>
                     <div
-                        class="w-[52px] h-[52px] rounded-full bg-cardLighter border border-borderDark flex items-center justify-center text-textMuted shrink-0">
+                        class="w-[50px] h-[50px] rounded-xl bg-cardLighter border border-white/5 flex items-center justify-center text-textMuted shrink-0">
                         <i class="fa-solid fa-book-open"></i>
                     </div>
                 </div>
 
-                <!-- واجهة المحرر -->
+                <!-- لوحة كتابة وتحرير المذكرات الفارهة (Note Editor Full Overlay) -->
                 <div id="note-editor"
-                    class="absolute inset-0 bg-[#1A1A1A] z-20 flex flex-col hidden transition-opacity duration-300 opacity-0">
-                    <div class="flex items-center gap-4 p-6 pb-2 border-b border-borderDark">
+                    class="absolute inset-0 bg-bgDark z-30 flex flex-col hidden transition-opacity duration-300 opacity-0">
+                    <div class="flex items-center justify-between p-6 pb-3 border-b border-white/[0.04]">
                         <button onclick="closeNoteEditor()"
-                            class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-colors hover:text-white group">
-                            <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                            class="w-10 h-10 rounded-xl bg-cardDark text-textMuted flex items-center justify-center border border-white/5 tap-effect shrink-0 hover:text-white transition-colors">
+                            <i class="fa-solid fa-arrow-right"></i>
                         </button>
-                        <input type="text" id="note-title-input" placeholder="عنوان المذكرة..."
-                            class="bg-transparent border-none outline-none text-white text-xl font-bold flex-1">
+                        <input type="text" id="note-title-input" placeholder="عنوان ملهم..."
+                            class="bg-transparent border-none outline-none text-white text-[16px] font-extrabold flex-1 px-4">
                         <button onclick="saveNote()"
-                            class="text-accentGreen font-bold px-3 py-1 rounded-lg bg-accentGreen/10 hover:bg-accentGreen/20 transition-colors">حفظ</button>
+                            class="bg-[#2DCEE3] text-bgDark font-extrabold px-4 py-2 rounded-xl text-xs hover:bg-[#2DCEE3]/90 transition-colors">حفظ
+                            التغييرات</button>
                     </div>
                     <div class="flex-1 p-6 overflow-y-auto">
                         <textarea id="note-content-input"
-                            class="w-full h-full bg-transparent border-none outline-none text-white/90 resize-none text-lg leading-relaxed"
-                            placeholder="اكتب أفكارك هنا..."></textarea>
+                            class="w-full h-full bg-transparent border-none outline-none text-white/80 resize-none text-[15px] leading-relaxed"
+                            placeholder="ابدأ بكتابة مسودتك، تفاصيل عملك، أو فكرتك المستحيلة هنا..."></textarea>
                     </div>
                 </div>
             </section>
 
-            <!-- 6. شاشة الأرشيف (Archive) -->
-            <section id="view-archive" class="p-6 hidden h-full flex flex-col relative">
-                <div class="flex items-center gap-4 mb-6">
+            <!-- ===================== 6. شاشة الأرشيف (Archive) ===================== -->
+            <section id="view-archive" class="p-6 hidden h-full flex flex-col relative animate-screen">
+                <div class="flex items-center justify-between mb-6">
                     <button onclick="navigate('tasks')"
-                        class="w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-colors hover:text-white">
+                        class="w-10 h-10 rounded-xl bg-cardDark text-textMuted flex items-center justify-center border border-white/5 tap-effect shrink-0 hover:text-white transition-colors">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                     <div class="text-center flex-1">
-                        <h2 class="text-2xl font-bold">الأرشيف</h2>
-                        <p class="text-textMuted text-sm mt-1">المهام المنجزة</p>
+                        <h2 class="text-lg font-extrabold text-white">خزانة الأرشيف</h2>
+                        <p class="text-[10px] text-textMuted">المهام المنجزة المكتملة</p>
                     </div>
                     <button onclick="clearArchive()"
-                        class="w-10 h-10 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center tap-effect shrink-0 transition-colors hover:bg-red-500/20"
-                        title="تفريغ الأرشيف">
+                        class="w-10 h-10 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 flex items-center justify-center tap-effect transition-colors"
+                        title="إفراغ الأرشيف">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </div>
-                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24" id="archive-list">
+                <div class="flex-1 overflow-y-auto hide-scrollbar pb-24 space-y-3" id="archive-list">
                     <!-- المهام المؤرشفة تظهر هنا -->
-                    <div class="text-center text-textMuted mt-10" id="empty-archive-msg">
-                        <i class="fa-solid fa-box-open text-4xl mb-3 opacity-50"></i>
-                        <p>الأرشيف فارغ.</p>
+                    <div class="text-center text-textMuted py-16" id="empty-archive-msg">
+                        <i class="fa-solid fa-archive text-5xl mb-4 text-white/10"></i>
+                        <p class="text-sm">الأرشيف فارغ حالياً.</p>
                     </div>
                 </div>
             </section>
 
-            <!-- 5. نافذة الإعدادات (Modal) -->
+            <!-- ===================== نافذة الإعدادات (Modal) ===================== -->
             <div id="settings-modal"
-                class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
-                <div class="bg-cardDark w-11/12 max-w-sm rounded-3xl p-6 transform scale-95 transition-transform duration-300"
+                class="fixed inset-0 bg-black/80 z-[150] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
+                <div class="bg-cardDark w-[90%] max-w-sm rounded-[32px] p-6 transform scale-95 transition-transform duration-300 border border-white/[0.04]"
                     id="settings-content">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold">الإعدادات</h3>
+                        <h3 class="text-md font-bold text-white">الإعدادات وإدارة الداتا</h3>
                         <button onclick="closeSettings()"
-                            class="text-textMuted hover:text-white w-8 h-8 rounded-full bg-cardLighter flex items-center justify-center"><i
-                                class="fa-solid fa-xmark"></i></button>
+                            class="text-textMuted hover:text-white w-8 h-8 rounded-lg bg-cardLighter flex items-center justify-center">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
 
                     <div class="space-y-4">
-                        <div class="bg-cardLighter p-4 rounded-2xl">
-                            <h4 class="font-bold text-sm mb-2 text-accentPurp">إدارة البيانات</h4>
-                            <p class="text-xs text-textMuted mb-4">تصدير أو استيراد بياناتك للحفظ كنسخة احتياطية.</p>
+                        <div class="bg-[#121314] p-4 rounded-2xl border border-white/[0.02]">
+                            <h4 class="font-bold text-xs mb-1 text-accentNeon">الاحتفاظ بالنسخة الاحتياطية</h4>
+                            <p class="text-[10px] text-textMuted mb-4">قم بتصدير ملف بياناتك أو تحميل نسخة سابقة لحماية
+                                مهامك.</p>
                             <div class="flex gap-2">
                                 <button onclick="exportData()"
-                                    class="flex-1 py-2 bg-cardDark border border-borderDark rounded-xl text-sm hover:bg-white/5 transition-colors text-white"><i
-                                        class="fa-solid fa-download ml-2"></i> تصدير</button>
+                                    class="flex-1 py-2.5 bg-cardLighter border border-white/5 rounded-xl text-xs font-bold hover:bg-white/5 transition-colors text-white">
+                                    <i class="fa-solid fa-download ml-1.5"></i> تصدير البيانات
+                                </button>
                                 <label
-                                    class="flex-1 py-2 bg-cardDark border border-borderDark rounded-xl text-sm hover:bg-white/5 transition-colors text-center cursor-pointer text-white">
-                                    <i class="fa-solid fa-upload ml-2"></i> استيراد
+                                    class="flex-1 py-2.5 bg-cardLighter border border-white/5 rounded-xl text-xs font-bold hover:bg-white/5 transition-colors text-center cursor-pointer text-white block">
+                                    <i class="fa-solid fa-upload ml-1.5"></i> استيراد ملف
                                     <input type="file" id="import-file" class="hidden" accept=".json"
                                         onchange="importData(event)">
                                 </label>
                             </div>
                         </div>
 
-                        <div class="bg-cardLighter p-4 rounded-2xl border border-red-500/20">
-                            <h4 class="font-bold text-sm mb-2 text-red-400">حذف البيانات</h4>
-                            <p class="text-xs text-textMuted mb-4">سيتم مسح جميع المهام والإحصائيات بشكل نهائي.</p>
+                        <div class="bg-[#121314] p-4 rounded-2xl border border-red-500/10">
+                            <h4 class="font-bold text-xs mb-1 text-red-400">حذف كلي للبيانات</h4>
+                            <p class="text-[10px] text-textMuted mb-4">انتبه! سيتم حذف كافة المهام، الإحصائيات، والأفكار
+                                ولن تتمكن من استعادتها.</p>
                             <button onclick="clearAllData()"
-                                class="w-full py-2 bg-red-500/20 text-red-400 rounded-xl text-sm hover:bg-red-500/30 transition-colors font-bold">مسح
-                                جميع البيانات</button>
+                                class="w-full py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-xs font-bold transition-all">مسح
+                                وتصفير الداتا</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- نافذة إضافة المهمة المنبثقة من الأسفل (Bottom Sheet) -->
-            <div id="add-task-modal" class="fixed inset-0 z-[60] pointer-events-none flex flex-col justify-end">
-                <!-- خلفية مظلمة -->
+            <!-- ===================== نافذة إضافة مهمة منبثقة من الأسفل (مطابقة لستايل شاشة Adding Meals في الصورة) ===================== -->
+            <div id="add-task-modal" class="fixed inset-0 z-[120] pointer-events-none flex flex-col justify-end">
+                <!-- خلفية داكنة خفيفة للتغطية -->
                 <div id="add-task-overlay"
-                    class="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 pointer-events-none"
+                    class="absolute inset-0 bg-black/70 opacity-0 transition-opacity duration-300 pointer-events-none"
                     onclick="closeAddTaskModal()"></div>
-                <!-- المحتوى -->
+                <!-- لوحة المحتوى (توهج علوي مع انحناء كبير) -->
                 <div id="add-task-content"
-                    class="bg-cardDark rounded-t-[32px] p-6 relative w-full max-w-[400px] mx-auto transform translate-y-full transition-transform duration-300 ease-out flex flex-col gap-5 border-t border-white/10 shadow-[0_-15px_40px_rgba(0,0,0,0.6)]">
-                    <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-2"></div>
+                    class="bg-cardDark rounded-t-[36px] p-6 relative w-full max-w-[450px] mx-auto transform translate-y-full transition-transform duration-300 ease-out flex flex-col gap-4 border-t border-white/10 shadow-glow-soft">
+                    <div class="w-10 h-1 bg-white/10 rounded-full mx-auto mb-2"></div>
 
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-xl font-bold">مهمة جديدة</h3>
+                    <div class="flex justify-between items-center mb-1">
+                        <h3 class="text-md font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-pencil text-accentNeon text-sm"></i> صياغة مهمة جديدة
+                        </h3>
                         <button onclick="closeAddTaskModal()"
-                            class="w-8 h-8 rounded-full bg-white/5 text-textMuted flex items-center justify-center hover:bg-white/10 transition-colors">
+                            class="w-8 h-8 rounded-lg bg-white/5 text-textMuted flex items-center justify-center hover:bg-white/10 transition-colors">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
 
-                    <!-- اسم المهمة -->
+                    <!-- إدخال اسم المهمة بستايل عميق محبب -->
                     <div
-                        class="bg-[#121212] rounded-2xl p-4 border border-borderDark focus-within:border-accentPurp transition-colors">
-                        <input type="text" id="new-task-input" placeholder="ماذا تريد أن تنجز؟"
-                            class="bg-transparent border-none outline-none text-white w-full text-lg"
+                        class="bg-[#000000] rounded-xl p-3 border border-white/5 focus-within:border-accentNeon/50 transition-colors">
+                        <input type="text" id="new-task-input" placeholder="اكتب الهدف الذي تسعى لتحقيقه..."
+                            class="bg-transparent border-none outline-none text-white w-full text-sm placeholder-textMuted/50"
                             onkeypress="if(event.key === 'Enter') addTask()">
                     </div>
 
-                    <!-- التصنيف والأولوية -->
-                    <div class="flex gap-4">
-                        <!-- تصنيف مخصص -->
+                    <!-- تخصيص التصنيفات والأولويات (قوائم منسدلة أنيقة) -->
+                    <div class="flex gap-3">
+                        <!-- اختيار التصنيف -->
                         <div id="custom-category-select"
-                            class="flex-1 bg-[#121212] rounded-2xl p-3 border border-borderDark flex flex-col gap-1 transition-colors relative cursor-pointer"
+                            class="flex-1 bg-[#000000] rounded-xl p-3 border border-white/5 flex flex-col gap-1 transition-colors relative cursor-pointer"
                             onclick="toggleCustomSelect('category-options')">
-                            <label class="text-[10px] text-textMuted px-1 pointer-events-none">التصنيف</label>
-                            <div class="text-white text-sm px-1 flex items-center justify-between pointer-events-none">
+                            <label class="text-[9px] text-textMuted font-bold">التصنيف</label>
+                            <div class="text-white text-xs flex items-center justify-between pointer-events-none">
                                 <span id="selected-category" data-value="عام">عام 🌍</span>
-                                <i class="fa-solid fa-chevron-down text-[10px] text-textMuted transition-transform duration-300"
+                                <i class="fa-solid fa-chevron-down text-[8px] text-textMuted transition-transform"
                                     id="category-chevron"></i>
                             </div>
-                            <div class="custom-select-options" id="category-options">
-                                <div class="custom-option"
+                            <div class="custom-select-options absolute bottom-12 left-0 right-0 bg-cardDark border border-white/10 rounded-xl z-50 overflow-hidden shadow-2xl hidden"
+                                id="category-options">
+                                <div class="p-2.5 text-xs text-white hover:bg-cardLighter"
                                     onclick="selectCustomOption('category', 'عمل', 'عمل 💼', event)">عمل 💼</div>
-                                <div class="custom-option"
+                                <div class="p-2.5 text-xs text-white hover:bg-cardLighter"
                                     onclick="selectCustomOption('category', 'شخصي', 'شخصي 👤', event)">شخصي 👤</div>
-                                <div class="custom-option"
+                                <div class="p-2.5 text-xs text-white hover:bg-cardLighter"
                                     onclick="selectCustomOption('category', 'دراسة', 'دراسة 📚', event)">دراسة 📚</div>
-                                <div class="custom-option"
+                                <div class="p-2.5 text-xs text-white hover:bg-cardLighter"
                                     onclick="selectCustomOption('category', 'عام', 'عام 🌍', event)">عام 🌍</div>
                             </div>
                         </div>
 
-                        <!-- أولوية مخصصة -->
+                        <!-- اختيار الأولوية -->
                         <div id="custom-priority-select"
-                            class="flex-1 bg-[#121212] rounded-2xl p-3 border border-borderDark flex flex-col gap-1 transition-colors relative cursor-pointer"
+                            class="flex-1 bg-[#000000] rounded-xl p-3 border border-white/5 flex flex-col gap-1 transition-colors relative cursor-pointer"
                             onclick="toggleCustomSelect('priority-options')">
-                            <label class="text-[10px] text-textMuted px-1 pointer-events-none">الأولوية</label>
-                            <div class="text-white text-sm px-1 flex items-center justify-between pointer-events-none">
+                            <label class="text-[9px] text-textMuted font-bold">الأولوية</label>
+                            <div class="text-white text-xs flex items-center justify-between pointer-events-none">
                                 <span id="selected-priority" data-value="طبيعي">طبيعي 🟢</span>
-                                <i class="fa-solid fa-chevron-down text-[10px] text-textMuted transition-transform duration-300"
+                                <i class="fa-solid fa-chevron-down text-[8px] text-textMuted transition-transform"
                                     id="priority-chevron"></i>
                             </div>
-                            <div class="custom-select-options" id="priority-options">
-                                <div class="custom-option"
+                            <div class="custom-select-options absolute bottom-12 left-0 right-0 bg-cardDark border border-white/10 rounded-xl z-50 overflow-hidden shadow-2xl hidden"
+                                id="priority-options">
+                                <div class="p-2.5 text-xs text-white hover:bg-cardLighter"
                                     onclick="selectCustomOption('priority', 'طبيعي', 'طبيعي 🟢', event)">طبيعي 🟢</div>
-                                <div class="custom-option"
+                                <div class="p-2.5 text-xs text-white hover:bg-cardLighter"
                                     onclick="selectCustomOption('priority', 'متوسط', 'متوسط 🟡', event)">متوسط 🟡</div>
-                                <div class="custom-option"
+                                <div class="p-2.5 text-xs text-white hover:bg-cardLighter"
                                     onclick="selectCustomOption('priority', 'مهم', 'مهم 🔴', event)">مهم 🔴</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- زر الحفظ -->
+                    <!-- زر الحفظ النهائي المضيء -->
                     <button onclick="addTask()"
-                        class="w-full bg-accentPurp text-white font-bold rounded-2xl py-4 mt-2 tap-effect shadow-glow flex items-center justify-center gap-2 mb-4">
-                        حفظ المهمة <i class="fa-solid fa-check"></i>
+                        class="w-full bg-accentNeon text-bgDark font-extrabold rounded-2xl py-4 mt-2 tap-effect shadow-neon-btn flex items-center justify-center gap-2 mb-4">
+                        حفظ وإدراج المهمة <i class="fa-solid fa-check"></i>
                     </button>
                 </div>
             </div>
 
         </main>
 
-        <!-- نافذة التأكيد المخصصة للحذف -->
+        <!-- ===================== نافذة التأكيد المخصصة للحذف ===================== -->
         <div id="delete-confirm-modal"
-            class="fixed inset-0 z-[70] pointer-events-none flex items-center justify-center">
+            class="fixed inset-0 z-[160] pointer-events-none flex items-center justify-center">
             <div id="delete-confirm-overlay"
                 class="absolute inset-0 bg-black/70 opacity-0 transition-opacity duration-300 pointer-events-none backdrop-blur-sm"
                 onclick="closeDeleteConfirm()"></div>
             <div id="delete-confirm-content"
-                class="bg-cardDark rounded-3xl p-6 relative w-11/12 max-w-sm mx-auto transform scale-90 opacity-0 transition-all duration-300 flex flex-col gap-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-red-500/20">
+                class="bg-cardDark rounded-[32px] p-6 relative w-[90%] max-w-sm mx-auto transform scale-90 opacity-0 transition-all duration-300 flex flex-col gap-4 shadow-2xl border border-red-500/10">
                 <div
-                    class="w-16 h-16 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto text-3xl mb-2">
+                    class="w-12 h-12 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center mx-auto text-xl mb-1 animate-bounce">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
-                <h3 class="text-xl font-bold text-center text-white">تأكيد الحذف</h3>
-                <p class="text-textMuted text-center text-sm mb-2">هل أنت متأكد من رغبتك في حذف هذه المهمة؟ لا يمكن
-                    التراجع عن هذا الإجراء.</p>
+                <h3 class="text-md font-bold text-center text-white">هل ترغب بحذف هذه المهمة؟</h3>
+                <p class="text-textMuted text-center text-xs leading-relaxed">يرجى تأكيد رغبتك في الحذف النهائي للمهمة،
+                    لا يمكن التراجع عن هذا الإجراء بعد تنفيذه.</p>
                 <div class="flex gap-3 mt-2">
                     <button onclick="closeDeleteConfirm()"
-                        class="flex-1 py-3 rounded-xl bg-cardLighter text-textMuted font-bold hover:text-white transition-colors">إلغاء</button>
+                        class="flex-1 py-3 rounded-xl bg-cardLighter text-textMuted font-bold text-xs hover:text-white transition-colors">تراجع</button>
                     <button id="confirm-delete-btn"
-                        class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold shadow-[0_0_15px_rgba(239,68,68,0.4)] hover:bg-red-600 transition-colors">حذف
+                        class="flex-1 py-3 rounded-xl bg-red-500 text-white text-xs font-bold shadow-lg hover:bg-red-600 transition-colors">حذف
                         نهائي</button>
                 </div>
             </div>
         </div>
 
-        <!-- شريط التنقل السفلي المطور (FAB Style) -->
-        <nav id="main-nav" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[400px] z-40">
+        <!-- ===================== شريط التنقل السفلي الاحترافي ذو الانحناء (Fluid Bottom Nav) ===================== -->
+        <nav id="main-nav" class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-[92%] max-w-[390px] z-40 transition-opacity duration-300">
             <div
-                class="bg-[#111111] px-2 py-2 rounded-[2rem] shadow-[0_15px_35px_rgba(0,0,0,0.5)] border border-white/5 flex justify-between items-center relative w-full h-[68px]">
+                class="bottom-nav-curve px-2 py-2 rounded-[24px] shadow-glow-soft flex justify-between items-center relative w-full h-[64px]">
 
+                <!-- الرئيسية -->
                 <button onclick="navigate('home')"
-                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300"
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-xl transition-all duration-300"
                     data-target="home">
-                    <i class="fa-solid fa-house text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                    <i class="fa-solid fa-house text-[18px] nav-icon text-textMuted"></i>
                 </button>
 
+                <!-- المهام -->
                 <button onclick="handleTasksNavClick()"
-                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300"
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-xl transition-all duration-300"
                     data-target="tasks">
-                    <i
-                        class="fa-solid fa-check-double text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                    <i class="fa-solid fa-list-check text-[18px] nav-icon text-textMuted"></i>
                 </button>
 
-                <!-- زر الإضافة المركزي (FAB) -->
+                <!-- زر الإضافة الأوسط البارز والفاخر كالصورة -->
                 <div class="flex-1 flex justify-center relative">
                     <div
-                        class="absolute -top-[44px] w-[64px] h-[64px] bg-[#111111] rounded-full flex items-center justify-center border-t border-white/5">
+                        class="absolute -top-[44px] w-[56px] h-[56px] bg-[#121314] rounded-full flex items-center justify-center">
                         <button onclick="openAddTaskModal()"
-                            class="w-[50px] h-[50px] bg-white rounded-full flex items-center justify-center text-[#111111] text-[22px] shadow-[0_4px_15px_rgba(0,0,0,0.3)] tap-effect hover:scale-105 transition-transform z-50">
+                            class="w-[44px] h-[44px] bg-accentNeon rounded-full flex items-center justify-center text-bgDark text-[18px] shadow-[0_8px_20px_rgba(192,248,46,0.5)] tap-effect hover:scale-105 transition-transform z-50">
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
                 </div>
 
+                <!-- المزيد -->
                 <button onclick="navigate('options')"
-                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300"
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-xl transition-all duration-300"
                     data-target="options">
-                    <i
-                        class="fa-solid fa-layer-group text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                    <i class="fa-solid fa-shapes text-[18px] nav-icon text-textMuted"></i>
                 </button>
 
+                <!-- التقارير -->
                 <button onclick="navigate('stats')"
-                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-full transition-colors duration-300"
+                    class="nav-btn flex items-center justify-center flex-1 h-full tap-effect rounded-xl transition-all duration-300"
                     data-target="stats">
-                    <i
-                        class="fa-solid fa-chart-simple text-[22px] nav-icon transition-colors duration-300 text-textMuted"></i>
+                    <i class="fa-solid fa-chart-line text-[18px] nav-icon text-textMuted"></i>
                 </button>
 
             </div>
         </nav>
 
-        <!-- Onboarding Overlay -->
+        <!-- ===================== شاشات Onboarding الفاخرة للتهيئة والترحيب ===================== -->
         <div id="onboarding-overlay"
-            class="absolute inset-0 bg-bgDark flex flex-col items-center justify-center p-6 hidden">
+            class="absolute inset-0 bg-bgDark flex flex-col items-center justify-center p-6 hidden z-[180]">
 
             <!-- Step 1: Name & Avatar -->
-            <div id="onboard-step-1" class="onboard-step active flex-col w-full max-w-sm items-center text-center">
-                <div class="relative w-24 h-24 mb-6 cursor-pointer group" onclick="cycleAvatar()">
+            <div id="onboard-step-1" class="onboard-step flex flex-col w-full max-w-sm items-center text-center">
+                <div class="relative w-20 h-20 mb-6 cursor-pointer group" onclick="cycleAvatar()">
                     <div
-                        class="w-full h-full rounded-full bg-accentPurp/20 text-accentPurp flex items-center justify-center text-5xl shadow-glow transition-transform duration-300 group-hover:scale-105">
-                        <i class="fa-solid fa-user-astronaut transition-transform duration-300"
-                            id="onboard-avatar-icon"></i>
+                        class="w-full h-full rounded-[24px] bg-accentNeon flex items-center justify-center text-3xl shadow-glow transition-transform duration-300 group-hover:scale-105">
+                        <i class="fa-solid fa-user-astronaut text-bgDark" id="onboard-avatar-icon"></i>
                     </div>
                     <div
-                        class="absolute bottom-0 right-0 w-8 h-8 bg-cardDark border-2 border-bgDark rounded-full flex items-center justify-center text-textMuted text-xs shadow-lg">
+                        class="absolute bottom-[-6px] right-[-6px] w-7 h-7 bg-cardDark border border-white/10 rounded-xl flex items-center justify-center text-textMuted text-[10px] shadow-lg">
                         <i class="fa-solid fa-arrows-rotate"></i>
                     </div>
                 </div>
-                <h2 class="text-3xl font-extrabold text-white mb-2">أهلاً بك في <span
-                        class="text-accentPurp">مُنجِز</span></h2>
-                <p class="text-textMuted mb-8 text-sm">تطبيقك الشخصي لإدارة المهام بذكاء وسهولة.</p>
+                <h2 class="text-2xl font-extrabold text-white mb-2">أهلاً بك في <span
+                        class="text-accentNeon">مُنجِز</span></h2>
+                <p class="text-textMuted mb-6 text-xs leading-relaxed">بداية جديدة لتنظيم يومك وزيادة إنتاجيتك في قالب
+                    فخم يحاكي أعلى معايير التصميم الذكي.</p>
                 <div
-                    class="w-full bg-[#121212] rounded-2xl p-4 border border-borderDark focus-within:border-accentPurp transition-colors mb-8">
-                    <input type="text" id="onboard-name-input" placeholder="ما هو اسمك؟"
-                        class="bg-transparent border-none outline-none text-white w-full text-center text-xl font-bold"
+                    class="w-full bg-[#000000] rounded-xl p-3 border border-white/5 focus-within:border-accentNeon/50 transition-colors mb-6">
+                    <input type="text" id="onboard-name-input" placeholder="اكتب اسمك الفخم هنا..."
+                        class="bg-transparent border-none outline-none text-white w-full text-center text-[15px] font-bold"
                         onkeypress="if(event.key === 'Enter') nextOnboardStep(2)">
                 </div>
                 <button onclick="nextOnboardStep(2)"
-                    class="w-full bg-accentPurp text-white font-bold rounded-2xl py-4 tap-effect shadow-glow flex items-center justify-center gap-2">
-                    التالي <i class="fa-solid fa-arrow-left"></i>
+                    class="w-full bg-accentNeon text-bgDark font-extrabold rounded-xl py-3.5 tap-effect shadow-neon-btn flex items-center justify-center gap-2 text-xs">
+                    متابعة وبدء الإعداد <i class="fa-solid fa-arrow-left"></i>
                 </button>
             </div>
 
             <!-- Step 2: Interests -->
-            <div id="onboard-step-2" class="onboard-step flex-col w-full max-w-sm items-center text-center">
-                <h2 class="text-2xl font-extrabold text-white mb-2">ما هي اهتماماتك؟</h2>
-                <p class="text-textMuted mb-8 text-sm">اختر المجالات التي تركز عليها لتخصيص مهامك.</p>
-                <div class="grid grid-cols-2 gap-3 w-full mb-8">
-                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
-                        onclick="toggleInterest(this, 'العمل')"><i class="fa-solid fa-briefcase ml-2"></i>
-                        العمل</button>
-                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
-                        onclick="toggleInterest(this, 'الدراسة')"><i class="fa-solid fa-book ml-2"></i> الدراسة</button>
-                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
-                        onclick="toggleInterest(this, 'الصحة')"><i class="fa-solid fa-heart-pulse ml-2"></i>
-                        الصحة</button>
-                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
-                        onclick="toggleInterest(this, 'الرياضة')"><i class="fa-solid fa-dumbbell ml-2"></i>
-                        الرياضة</button>
-                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
-                        onclick="toggleInterest(this, 'تطوير شخصي')"><i class="fa-solid fa-arrow-trend-up ml-2"></i>
-                        تطوير شخصي</button>
-                    <button class="interest-btn rounded-xl py-3 text-sm text-textMuted font-bold"
-                        onclick="toggleInterest(this, 'العائلة')"><i class="fa-solid fa-house-user ml-2"></i>
-                        العائلة</button>
+            <div id="onboard-step-2" class="onboard-step flex flex-col w-full max-w-sm items-center text-center hidden">
+                <h2 class="text-xl font-extrabold text-white mb-2">ما هي اهتماماتك الرئيسية؟</h2>
+                <p class="text-textMuted mb-6 text-xs leading-relaxed">حدد المجالات التي تركز عليها لتخصيص محرك مهامك
+                    وتسهيل جدولتها.</p>
+                <div class="grid grid-cols-2 gap-2.5 w-full mb-8">
+                    <button
+                        class="interest-btn rounded-xl py-3 text-xs text-textMuted font-bold border border-white/5 bg-cardDark hover:border-accentNeon/40 hover:text-white transition-colors"
+                        onclick="toggleInterest(this, 'العمل')">العمل 💼</button>
+                    <button
+                        class="interest-btn rounded-xl py-3 text-xs text-textMuted font-bold border border-white/5 bg-cardDark hover:border-accentNeon/40 hover:text-white transition-colors"
+                        onclick="toggleInterest(this, 'الدراسة')">الدراسة 📚</button>
+                    <button
+                        class="interest-btn rounded-xl py-3 text-xs text-textMuted font-bold border border-white/5 bg-cardDark hover:border-accentNeon/40 hover:text-white transition-colors"
+                        onclick="toggleInterest(this, 'الصحة')">الصحة 🍏</button>
+                    <button
+                        class="interest-btn rounded-xl py-3 text-xs text-textMuted font-bold border border-white/5 bg-cardDark hover:border-accentNeon/40 hover:text-white transition-colors"
+                        onclick="toggleInterest(this, 'الرياضة')">الرياضة 🏋️</button>
                 </div>
-                <div class="flex gap-3 w-full">
+                <div class="flex gap-2 w-full">
                     <button onclick="nextOnboardStep(1)"
-                        class="py-4 px-6 rounded-2xl bg-cardLighter text-textMuted font-bold hover:text-white transition-colors"><i
+                        class="py-3.5 px-5 rounded-xl bg-cardLighter text-textMuted font-bold hover:text-white transition-colors text-xs"><i
                             class="fa-solid fa-arrow-right"></i></button>
                     <button onclick="nextOnboardStep(3)"
-                        class="flex-1 bg-accentPurp text-white font-bold rounded-2xl py-4 tap-effect shadow-glow flex items-center justify-center gap-2">التالي
-                        <i class="fa-solid fa-arrow-left"></i></button>
+                        class="flex-1 bg-accentNeon text-bgDark font-extrabold rounded-xl py-3.5 tap-effect shadow-neon-btn flex items-center justify-center gap-2 text-xs">متابعة
+                        الخطوات <i class="fa-solid fa-arrow-left"></i></button>
                 </div>
             </div>
 
             <!-- Step 3: Level -->
-            <div id="onboard-step-3" class="onboard-step flex-col w-full max-w-sm items-center text-center">
-                <h2 class="text-2xl font-extrabold text-white mb-2">مستوى إنتاجيتك الحالي؟</h2>
-                <p class="text-textMuted mb-8 text-sm">سيساعدنا هذا في تخصيص تحدياتك.</p>
-                <div class="flex flex-col gap-3 w-full mb-8">
-                    <button class="level-btn rounded-xl p-4 text-right flex items-center justify-between"
+            <div id="onboard-step-3" class="onboard-step flex flex-col w-full max-w-sm items-center text-center hidden">
+                <h2 class="text-xl font-extrabold text-white mb-2">مستوى إنتاجيتك الفعلي؟</h2>
+                <p class="text-textMuted mb-6 text-xs leading-relaxed">سيساعدنا هذا في صياغة تحدياتك اليومية بما يتناسب
+                    مع روتينك الحالي.</p>
+                <div class="flex flex-col gap-2.5 w-full mb-8">
+                    <button
+                        class="level-btn rounded-xl p-3 border border-white/5 bg-cardDark text-right flex items-center justify-between hover:border-accentNeon/30 transition-all duration-300"
                         onclick="selectLevel(this, 'مبتدئ')">
-                        <span class="font-bold text-white">مبتدئ 🌱</span>
-                        <span class="text-xs text-textMuted">أحاول تنظيم وقتي</span>
+                        <span class="font-bold text-xs text-white">مبتدئ 🌱</span>
+                        <span class="text-[10px] text-textMuted">أحاول تنظيم يومي</span>
                     </button>
-                    <button class="level-btn rounded-xl p-4 text-right flex items-center justify-between"
+                    <button
+                        class="level-btn rounded-xl p-3 border border-white/5 bg-cardDark text-right flex items-center justify-between hover:border-accentNeon/30 transition-all duration-300"
                         onclick="selectLevel(this, 'متوسط')">
-                        <span class="font-bold text-white">متوسط ⭐</span>
-                        <span class="text-xs text-textMuted">أنجز مهامي بانتظام</span>
+                        <span class="font-bold text-xs text-white">متوسط ⭐</span>
+                        <span class="text-[10px] text-textMuted">أنجز مهامي بانتظام</span>
                     </button>
-                    <button class="level-btn rounded-xl p-4 text-right flex items-center justify-between"
-                        onclick="selectLevel(this, 'متقدم')">
-                        <span class="font-bold text-white">متقدم 🔥</span>
-                        <span class="text-xs text-textMuted">منظم جداً ومنتج</span>
-                    </button>
-                    <button class="level-btn rounded-xl p-4 text-right flex items-center justify-between"
+                    <button
+                        class="level-btn rounded-xl p-3 border border-white/5 bg-cardDark text-right flex items-center justify-between hover:border-accentNeon/30 transition-all duration-300"
                         onclick="selectLevel(this, 'أسطورة')">
-                        <span class="font-bold text-white">أسطورة 👑</span>
-                        <span class="text-xs text-textMuted">أحقق أهدافي بلا توقف</span>
+                        <span class="font-bold text-xs text-white">إنتاجية خارقة 🔥</span>
+                        <span class="text-[10px] text-textMuted">أنظم وقتي باحترافية كاملة</span>
                     </button>
                 </div>
-                <div class="flex gap-3 w-full">
+                <div class="flex gap-2 w-full">
                     <button onclick="nextOnboardStep(2)"
-                        class="py-4 px-6 rounded-2xl bg-cardLighter text-textMuted font-bold hover:text-white transition-colors"><i
+                        class="py-3.5 px-5 rounded-xl bg-cardLighter text-textMuted font-bold hover:text-white transition-colors text-xs"><i
                             class="fa-solid fa-arrow-right"></i></button>
                     <button onclick="nextOnboardStep(4)"
-                        class="flex-1 bg-accentGreen text-bgDark font-bold rounded-2xl py-4 tap-effect shadow-[0_0_15px_rgba(136,237,170,0.3)] flex items-center justify-center gap-2">التالي
-                        <i class="fa-solid fa-arrow-left"></i></button>
+                        class="flex-1 bg-accentNeon text-bgDark font-extrabold rounded-xl py-3.5 tap-effect shadow-neon-btn flex items-center justify-center gap-2 text-xs">تجهيز
+                        الحساب <i class="fa-solid fa-arrow-left"></i></button>
                 </div>
             </div>
 
-            <!-- Step 4: Final -->
+            <!-- Step 4: Final Ready -->
             <div id="onboard-step-4"
-                class="onboard-step flex-col w-full max-w-sm items-center text-center justify-center h-full">
-                <div class="w-32 h-32 relative mb-6">
-                    <div class="absolute inset-0 bg-accentPurp opacity-20 rounded-full blur-xl animate-pulse"></div>
+                class="onboard-step flex flex-col w-full max-w-sm items-center text-center justify-center h-full hidden">
+                <div class="w-24 h-24 relative mb-6">
+                    <div class="absolute inset-0 bg-accentNeon/20 rounded-full blur-xl animate-pulse"></div>
                     <div
-                        class="relative w-full h-full bg-cardDark border border-accentPurp rounded-full flex items-center justify-center text-5xl shadow-glow">
-                        <i class="fa-solid fa-rocket text-accentPurp"></i>
+                        class="relative w-full h-full bg-cardDark border border-accentNeon/30 rounded-[32px] flex items-center justify-center text-4xl shadow-glow">
+                        <i class="fa-solid fa-rocket text-accentNeon"></i>
                     </div>
                 </div>
-                <h2 class="text-3xl font-extrabold text-white mb-4 leading-tight" id="onboard-final-text">أهلاً بك يا
-                    <br><span class="text-accentPurp" id="onboard-final-name"></span><br>في تطبيق منجز
-                </h2>
-                <p class="text-textMuted mb-10 text-sm">كل شيء جاهز للبدء في تحقيق أهدافك.</p>
+                <h2 class="text-2xl font-extrabold text-white mb-3 leading-tight" id="onboard-final-text">كل شيء جاهز
+                    للإنطلاق!</h2>
+                <p class="text-textMuted mb-8 text-xs leading-relaxed">لقد قمنا بتهيئة واجهة منجز لملائمة أهدافك اليومية
+                    بدقة فائقة.</p>
                 <button onclick="finishOnboarding()"
-                    class="w-full bg-accentPurp text-white font-bold rounded-2xl py-4 tap-effect shadow-glow flex items-center justify-center text-lg">
-                    ابدأ رحلتك
+                    class="w-full bg-accentNeon text-bgDark font-extrabold rounded-xl py-4 tap-effect shadow-neon-btn text-xs">
+                    ابدأ رحلتك الفخمة
                 </button>
             </div>
 
@@ -1096,16 +1087,17 @@
 
     </div>
 
-    <!-- أكواد الجافاسكريبت -->
+    <!-- أكواد الجافاسكريبت المحدثة والمنظمة بدقة لتفادي أي أخطاء -->
     <script>
-        // --- حالة التطبيق (State) ---
+        // --- حالة التطبيق الأساسية (State) ---
         let tasks = JSON.parse(localStorage.getItem('app_tasks')) || [];
         let notes = JSON.parse(localStorage.getItem('app_notes')) || [];
         let userData = JSON.parse(localStorage.getItem('app_user_data')) || null;
         let dailyPlan = JSON.parse(localStorage.getItem('app_daily_plan')) || [];
         let onboardData = { name: '', interests: [], level: '', avatar: 'fa-user-astronaut' };
+        let taskToDeleteId = null;
 
-        const avatarOptions = ['fa-user-astronaut', 'fa-user-ninja', 'fa-user-tie', 'fa-user-graduate', 'fa-user-doctor', 'fa-user-secret', 'fa-user-robot', 'fa-user-injured', 'fa-ghost', 'fa-skull', 'fa-crown', 'fa-hat-wizard', 'fa-masks-theater'];
+        const avatarOptions = ['fa-user-astronaut', 'fa-user-ninja', 'fa-user-tie', 'fa-user-graduate', 'fa-user-doctor', 'fa-user-secret', 'fa-user-robot', 'fa-ghost', 'fa-crown', 'fa-hat-wizard'];
         let currentAvatarIndex = 0;
 
         function cycleAvatar() {
@@ -1113,13 +1105,11 @@
             onboardData.avatar = avatarOptions[currentAvatarIndex];
 
             const iconEl = document.getElementById('onboard-avatar-icon');
-            // Animate out
             iconEl.classList.remove('scale-100');
             iconEl.classList.add('scale-50', 'opacity-0');
 
             setTimeout(() => {
-                iconEl.className = `fa-solid ${onboardData.avatar} transition-all duration-300 scale-50 opacity-0`;
-                // Animate in
+                iconEl.className = `fa-solid ${onboardData.avatar} text-bgDark transition-all duration-300 scale-50 opacity-0`;
                 requestAnimationFrame(() => {
                     iconEl.classList.remove('scale-50', 'opacity-0');
                     iconEl.classList.add('scale-100', 'opacity-100');
@@ -1128,31 +1118,29 @@
         }
 
         let categories = {
-            'عمل': { color: 'text-accentPurp', bg: 'bg-accentPurp/20', icon: 'fa-briefcase' },
-            'شخصي': { color: 'text-accentGreen', bg: 'bg-accentGreen/20', icon: 'fa-user' },
-            'دراسة': { color: 'text-accentOrange', bg: 'bg-accentOrange/20', icon: 'fa-book' },
-            'عام': { color: 'text-blue-400', bg: 'bg-blue-400/20', icon: 'fa-list' },
-            'الصحة': { color: 'text-red-400', bg: 'bg-red-400/20', icon: 'fa-heart-pulse' },
-            'الرياضة': { color: 'text-yellow-400', bg: 'bg-yellow-400/20', icon: 'fa-dumbbell' },
-            'تطوير شخصي': { color: 'text-blue-400', bg: 'bg-blue-400/20', icon: 'fa-arrow-trend-up' },
-            'العائلة': { color: 'text-green-400', bg: 'bg-green-400/20', icon: 'fa-house-user' }
+            'عمل': { color: 'text-accentNeon', bg: 'bg-accentNeonMuted', icon: 'fa-briefcase' },
+            'شخصي': { color: 'text-[#FF9F43]', bg: 'bg-[#FF9F43]/10', icon: 'fa-user' },
+            'دراسة': { color: 'text-[#2DCEE3]', bg: 'bg-[#2DCEE3]/10', icon: 'fa-book' },
+            'عام': { color: 'text-blue-400', bg: 'bg-blue-400/10', icon: 'fa-globe' }
         };
+
         let currentDate = new Date();
         let selectedDateStr = formatDate(currentDate);
 
-        // متغيرات المؤقت
+        // متغيرات بومودورو والمؤقت
         let timerInterval;
-        let timerDuration = 25 * 60; // 25 دقيقة افتراضياً
+        let timerDuration = 25 * 60;
         let timeLeft = timerDuration;
         let isTimerRunning = false;
-        let isWorkMode = true; // true = عمل, false = استراحة
-        const TIMER_CIRCUMFERENCE = 816.8; // محيط الدائرة (2 * pi * r)
+        let isWorkMode = true;
+        let focusMinutesCount = parseInt(localStorage.getItem('app_focus_minutes_count')) || 0;
+        const TIMER_CIRCUMFERENCE = 716.2; // 2 * pi * r (r=114)
 
-        // متغيرات المخططات
+        // مرجع المخططات
         let weeklyChartInstance = null;
         let categoryChartInstance = null;
 
-        // --- دوال التهيئة ---
+        // --- التهيئة والتنسيق ---
         function init() {
             if (!userData) {
                 document.getElementById('onboarding-overlay').classList.remove('hidden');
@@ -1165,11 +1153,9 @@
             document.getElementById('main-content').classList.remove('hidden');
             document.querySelector('nav').classList.remove('hidden');
 
-            // Set user data UI
             document.getElementById('home-user-name').textContent = userData.name;
             const levelBadge = document.getElementById('home-user-level');
-            levelBadge.textContent = userData.level;
-            levelBadge.classList.remove('hidden');
+            levelBadge.textContent = userData.level ? `${userData.level === 'مبتدئ' ? '🌱' : userData.level === 'متوسط' ? '⭐' : '🔥'} ${userData.level}` : '🌱 مبتدئ';
 
             const homeAvatar = document.getElementById('home-avatar-icon');
             if (homeAvatar && userData.avatar) {
@@ -1177,7 +1163,6 @@
             }
 
             updateCategoryOptions();
-
             setGreeting();
             updateDateText();
             generateCalendarStrip();
@@ -1192,11 +1177,10 @@
             updateDayCountdown();
             setInterval(updateDayCountdown, 1000);
 
-            navigate('home'); // الشاشة الافتراضية
+            navigate('home');
             updateTimerDisplay();
         }
 
-        // --- منطق زر المهام المزدوج ---
         let lastTasksClickTime = 0;
         let dailyPlanBackTarget = 'options';
 
@@ -1205,7 +1189,6 @@
             const currentView = document.querySelector('main > section:not(.hidden)').id;
 
             if (currentView === 'view-tasks' && now - lastTasksClickTime < 400) {
-                // Double tap detected while on tasks page
                 openDailyPlanFromTasks();
             } else {
                 navigate('tasks');
@@ -1215,35 +1198,22 @@
 
         function openDailyPlanFromTasks() {
             dailyPlanBackTarget = 'tasks';
-
             const dailyPlanView = document.getElementById('view-daily-plan');
-
-            // إضافة كلاسات الأنيميشن السريع
-            dailyPlanView.classList.remove('animate-fast-fade-in');
-            void dailyPlanView.offsetWidth; // Trigger reflow
-            dailyPlanView.classList.add('animate-fast-fade-in');
-
+            dailyPlanView.classList.remove('animate-screen');
+            void dailyPlanView.offsetWidth;
+            dailyPlanView.classList.add('animate-screen');
             navigate('daily-plan');
-
-            // تنظيف الكلاس بعد انتهاء الأنيميشن
-            setTimeout(() => {
-                dailyPlanView.classList.remove('animate-fast-fade-in');
-            }, 300);
         }
 
         function navigateDailyPlanBack() {
             navigate(dailyPlanBackTarget);
-            dailyPlanBackTarget = 'options'; // Reset back to default
+            dailyPlanBackTarget = 'options';
         }
 
-        // --- التنقل بين الشاشات ---
         function navigate(viewId) {
-            // إخفاء جميع الشاشات
             document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
-            // إظهار الشاشة المطلوبة
             document.getElementById(`view-${viewId}`).classList.remove('hidden');
 
-            // إخفاء أو إظهار شريط التنقل الرئيسي
             const mainNav = document.getElementById('main-nav');
             if (['home', 'tasks', 'options', 'stats'].includes(viewId)) {
                 if (mainNav) mainNav.classList.remove('hidden');
@@ -1251,30 +1221,27 @@
                 if (mainNav) mainNav.classList.add('hidden');
             }
 
-            // تحديث تصميم شريط التنقل
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 const icon = btn.querySelector('.nav-icon');
-
                 if (btn.dataset.target === viewId) {
-                    btn.classList.add('bg-accentPurp/20');
+                    btn.classList.add('bg-accentNeon/10');
                     btn.classList.remove('bg-transparent');
-                    icon.classList.add('text-accentPurp');
+                    icon.classList.add('text-accentNeon');
                     icon.classList.remove('text-textMuted');
                 } else {
-                    btn.classList.remove('bg-accentPurp/20');
+                    btn.classList.remove('bg-accentNeon/10');
                     btn.classList.add('bg-transparent');
-                    icon.classList.remove('text-accentPurp');
+                    icon.classList.remove('text-accentNeon');
                     icon.classList.add('text-textMuted');
                 }
             });
 
-            // تحديث الإحصائيات إذا تم فتح شاشتها
             if (viewId === 'stats') {
                 updateStatsData();
             }
         }
 
-        // --- دوال المخطط اليومي ---
+        // --- المخطط اليومي ---
         function checkNewDayForPlan() {
             const lastDate = localStorage.getItem('app_daily_plan_date');
             const today = formatDate(new Date());
@@ -1309,9 +1276,9 @@
 
             if (dailyPlan.length === 0) {
                 list.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full text-textMuted opacity-50 mt-10">
-                        <i class="fa-solid fa-calendar-day text-4xl mb-3"></i>
-                        <p class="text-sm">لم تقم بإضافة أي مواعيد اليوم.</p>
+                    <div class="flex flex-col items-center justify-center h-full text-textMuted opacity-50 py-16">
+                        <i class="fa-solid fa-calendar-clock text-4xl mb-3 text-white/5"></i>
+                        <p class="text-xs">لم تحدد مواعيد بعد لليوم.</p>
                     </div>
                 `;
                 return;
@@ -1325,15 +1292,15 @@
 
             dailyPlan.forEach((item) => {
                 const row = document.createElement('div');
-                row.className = `flex items-center gap-2 border-b border-white/5 py-2 transition-colors hover:bg-white/5 rounded-lg px-2 group ${item.completed ? 'opacity-50' : ''}`;
+                row.className = `flex items-center gap-3 bg-cardDark/80 border border-white/[0.02] p-3 transition-colors hover:bg-cardLighter rounded-2xl ${item.completed ? 'opacity-50' : ''}`;
 
                 row.innerHTML = `
-                    <div class="w-5 h-5 rounded border ${item.completed ? 'bg-accentOrange border-accentOrange text-bgDark' : 'border-textMuted/50 text-transparent'} flex items-center justify-center shrink-0 cursor-pointer tap-effect transition-colors" onclick="toggleDailyPlan('${item.id}')">
-                        <i class="fa-solid fa-check text-[10px]"></i>
+                    <div class="custom-checkbox ${item.completed ? 'checked' : ''}" onclick="toggleDailyPlan('${item.id}')">
+                        <i class="fa-solid fa-check"></i>
                     </div>
-                    <input type="text" class="flex-1 bg-transparent border-none outline-none text-[15px] ${item.completed ? 'line-through text-textMuted' : 'text-white'} placeholder-textMuted/30 focus:text-accentOrange transition-colors px-2" placeholder="مهمة جديدة..." value="${item.task}" onchange="updateDailyPlan('${item.id}', 'task', this.value)">
-                    <input type="time" class="bg-cardLighter/80 rounded-lg px-1 py-1 text-sm outline-none text-accentGreen font-numbers border border-transparent focus:border-accentGreen/50 w-[80px] text-center" value="${item.time}" onchange="updateDailyPlan('${item.id}', 'time', this.value)">
-                    <button onclick="deleteDailyPlan('${item.id}')" class="w-8 h-8 flex items-center justify-center text-textMuted hover:text-red-400 hover:bg-red-400/10 rounded-full transition-colors shrink-0">
+                    <input type="text" class="flex-1 bg-transparent border-none outline-none text-xs font-bold ${item.completed ? 'line-through text-textMuted' : 'text-white'} placeholder-textMuted/30 focus:text-accentNeon transition-colors px-1" placeholder="عنوان الموعد أو المهمة المخططة..." value="${item.task}" onchange="updateDailyPlan('${item.id}', 'task', this.value)">
+                    <input type="time" class="bg-[#000000] rounded-xl px-2 py-1 text-xs outline-none text-accentNeon font-numbers border border-white/5 w-[85px] text-center" value="${item.time}" onchange="updateDailyPlan('${item.id}', 'time', this.value)">
+                    <button onclick="deleteDailyPlan('${item.id}')" class="w-8 h-8 flex items-center justify-center text-textMuted hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors shrink-0">
                         <i class="fa-solid fa-trash-can text-xs"></i>
                     </button>
                 `;
@@ -1350,6 +1317,7 @@
             });
             saveDailyPlan();
             renderDailyPlan();
+            updateHomeStats();
         }
 
         function updateDailyPlan(id, field, value) {
@@ -1358,6 +1326,7 @@
                 item[field] = value;
                 saveDailyPlan();
                 if (field === 'time') renderDailyPlan();
+                updateHomeStats();
             }
         }
 
@@ -1367,7 +1336,8 @@
                 item.completed = !item.completed;
                 saveDailyPlan();
                 renderDailyPlan();
-                if (item.completed && typeof triggerConfetti === 'function') triggerConfetti();
+                updateHomeStats();
+                if (item.completed) triggerConfetti();
             }
         }
 
@@ -1375,13 +1345,14 @@
             dailyPlan = dailyPlan.filter(i => i.id !== id);
             saveDailyPlan();
             renderDailyPlan();
+            updateHomeStats();
         }
 
         function saveDailyPlan() {
             localStorage.setItem('app_daily_plan', JSON.stringify(dailyPlan));
         }
 
-        // --- دوال مساعدة للتاريخ ---
+        // --- المساعدات للتاريخ ---
         function formatDate(date) {
             const yyyy = date.getFullYear();
             const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -1397,17 +1368,17 @@
         function setGreeting() {
             const hour = new Date().getHours();
             let greeting = 'أهلاً بك';
-            if (hour < 12) greeting = 'صباح الخير';
-            else if (hour < 18) greeting = 'مساء الخير';
+            if (hour < 12) greeting = 'صباح الإنتاج والنشاط';
+            else if (hour < 18) greeting = 'مساء الإنجاز والهمة';
 
             if (userData && userData.name) {
-                document.getElementById('greeting-text').innerHTML = `${greeting}، <br><span class="text-accentPurp">${userData.name}</span>`;
+                document.getElementById('greeting-text').innerHTML = `${greeting}، <br><span class="text-accentNeon">${userData.name}</span>`;
             } else {
                 document.getElementById('greeting-text').textContent = greeting;
             }
         }
 
-        // --- دوال الإعداد (Onboarding) ---
+        // --- تهيئة Onboarding ---
         function nextOnboardStep(step) {
             if (step === 2) {
                 const nameInput = document.getElementById('onboard-name-input').value.trim();
@@ -1416,26 +1387,32 @@
             }
             if (step === 4) {
                 if (!onboardData.level) return;
-                document.getElementById('onboard-final-name').textContent = onboardData.name;
+                document.getElementById('onboard-final-text').innerHTML = `أهلاً بك يا <br><span class="text-accentNeon">${onboardData.name}</span><br>جاهز للانطلاق والتحدي!`;
             }
 
-            document.querySelectorAll('.onboard-step').forEach(el => el.classList.remove('active'));
-            document.getElementById('onboard-step-' + step).classList.add('active');
+            document.querySelectorAll('.onboard-step').forEach(el => el.classList.add('hidden'));
+            document.getElementById('onboard-step-' + step).classList.remove('hidden');
         }
 
         function toggleInterest(btn, interest) {
             if (onboardData.interests.includes(interest)) {
                 onboardData.interests = onboardData.interests.filter(i => i !== interest);
-                btn.classList.remove('selected');
+                btn.classList.remove('border-accentNeon');
+                btn.classList.add('border-white/5');
             } else {
                 onboardData.interests.push(interest);
-                btn.classList.add('selected');
+                btn.classList.add('border-accentNeon');
+                btn.classList.remove('border-white/5');
             }
         }
 
         function selectLevel(btn, level) {
-            document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
+            document.querySelectorAll('.level-btn').forEach(b => {
+                b.classList.remove('border-accentNeon');
+                b.classList.add('border-white/5');
+            });
+            btn.classList.add('border-accentNeon');
+            btn.classList.remove('border-white/5');
             onboardData.level = level;
         }
 
@@ -1445,14 +1422,14 @@
             localStorage.setItem('app_user_data', JSON.stringify(userData));
 
             const overlay = document.getElementById('onboarding-overlay');
-            overlay.style.transition = 'opacity 0.8s ease';
+            overlay.style.transition = 'opacity 0.6s ease';
             overlay.style.opacity = '0';
 
             setTimeout(() => {
                 overlay.classList.add('hidden');
                 overlay.style.opacity = '1';
                 init();
-            }, 800);
+            }, 600);
         }
 
         function updateCategoryOptions() {
@@ -1461,29 +1438,27 @@
             if (!container) return;
             container.innerHTML = '';
 
-            // Always add default
             let allOptions = ['عام', 'عمل', 'شخصي', 'دراسة'];
-            // Add interests
             userData.interests.forEach(i => {
                 if (!allOptions.includes(i)) allOptions.push(i);
             });
 
             allOptions.forEach(opt => {
                 const map = categories[opt] || categories['عام'];
-                container.innerHTML += `<div class="custom-option" onclick="selectCustomOption('category', '${opt}', '${opt}', event)">${opt} <i class="fa-solid ${map.icon} ml-1"></i></div>`;
+                container.innerHTML += `<div class="p-2.5 text-xs text-white hover:bg-cardLighter flex justify-between items-center cursor-pointer" onclick="selectCustomOption('category', '${opt}', '${opt} <i class=&quot;fa-solid ${map.icon} ml-1&quot;></i>', event)">${opt} <i class="fa-solid ${map.icon} text-textMuted text-[10px]"></i></div>`;
             });
         }
 
-        // --- شريط التقويم الأفقي ---
+        // --- توليد شريط التقويم الأفقي كالهاتف الأوسط ---
         function generateCalendarStrip() {
             const container = document.getElementById('calendar-strip');
+            if (!container) return;
             container.innerHTML = '';
 
-            const dayNames = ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
+            const dayNames = ['أحد', 'إثن', 'ثلا', 'أرب', 'خمي', 'جمع', 'سبت'];
 
-            // إنشاء 7 أيام (3 قبل، اليوم، 3 بعد) أو أسبوع كامل
             let startDate = new Date(currentDate);
-            startDate.setDate(startDate.getDate() - Math.min(startDate.getDay(), 3)); // محاولة توسيط اليوم
+            startDate.setDate(startDate.getDate() - Math.min(startDate.getDay(), 3));
 
             for (let i = 0; i < 14; i++) {
                 let d = new Date(startDate);
@@ -1494,11 +1469,11 @@
                 let isToday = dStr === formatDate(new Date());
 
                 let dayEl = document.createElement('div');
-                dayEl.className = `flex flex-col items-center justify-center rounded-full py-3 px-4 min-w-[65px] cursor-pointer transition-colors tap-effect border ${isSelected ? 'bg-accentPurp text-white border-accentPurp shadow-glow' : 'bg-cardDark text-textMuted border-borderDark hover:bg-cardLighter'}`;
+                dayEl.className = `flex flex-col items-center justify-center rounded-2xl py-3 px-3.5 min-w-[62px] cursor-pointer transition-all duration-300 border ${isSelected ? 'bg-accentNeon text-bgDark border-accentNeon shadow-glow' : 'bg-cardDark text-textMuted border-white/[0.03] hover:bg-cardLighter'}`;
 
                 dayEl.innerHTML = `
-                    <span class="text-[10px] mb-1 ${isSelected ? 'text-white/80' : ''}">${dayNames[d.getDay()]}</span>
-                    <span class="font-bold text-lg font-numbers ${isToday && !isSelected ? 'text-accentPurp' : ''}">${d.getDate()}</span>
+                    <span class="text-[9px] mb-1 font-bold ${isSelected ? 'text-bgDark' : 'text-textMuted'}">${dayNames[d.getDay()]}</span>
+                    <span class="font-extrabold text-[16px] font-numbers ${isToday && !isSelected ? 'text-accentNeon' : ''}">${d.getDate()}</span>
                 `;
 
                 dayEl.onclick = () => {
@@ -1509,16 +1484,15 @@
 
                 container.appendChild(dayEl);
 
-                // تمرير للشريط ليكون العنصر المحدد ظاهراً
                 if (isSelected) {
                     setTimeout(() => {
                         dayEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                    }, 10);
+                    }, 15);
                 }
             }
         }
 
-        // --- إدارة المهام ---
+        // --- إدارة حفظ المهام ---
         function saveTasks() {
             localStorage.setItem('app_tasks', JSON.stringify(tasks));
             updateHomeStats();
@@ -1531,8 +1505,8 @@
             return tasks.filter(t => t.date === selectedDateStr);
         }
 
-        // --- الفلترة والنافذة المنبثقة للمهام ---
-        let currentTaskFilter = 'all'; // all, متوسط, مهم
+        // --- الفلترة وسلوك القوائم المنسدلة ---
+        let currentTaskFilter = 'all';
 
         function cycleTaskFilter() {
             const btn = document.getElementById('task-filter-btn');
@@ -1540,31 +1514,29 @@
 
             if (currentTaskFilter === 'all') {
                 currentTaskFilter = 'متوسط';
-                btn.className = "w-10 h-10 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center border border-yellow-500/50 tap-effect shrink-0 transition-all duration-300 relative overflow-hidden";
-                icon.className = "fa-solid fa-star transition-transform duration-300 rotate-180 scale-110";
+                btn.className = "w-10 h-10 rounded-xl bg-yellow-500/10 text-yellow-500 flex items-center justify-center border border-yellow-500/30 tap-effect shrink-0 transition-all";
+                icon.className = "fa-solid fa-star";
             } else if (currentTaskFilter === 'متوسط') {
                 currentTaskFilter = 'مهم';
-                btn.className = "w-10 h-10 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center border border-red-500/50 tap-effect shrink-0 transition-all duration-300 relative overflow-hidden";
-                icon.className = "fa-solid fa-fire transition-transform duration-300 rotate-[360deg] scale-110";
+                btn.className = "w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center border border-red-500/30 tap-effect shrink-0 transition-all";
+                icon.className = "fa-solid fa-fire animate-pulse";
             } else {
                 currentTaskFilter = 'all';
-                btn.className = "w-10 h-10 rounded-full bg-cardDark text-textMuted flex items-center justify-center border border-borderDark tap-effect shrink-0 transition-all duration-300 relative overflow-hidden";
-                icon.className = "fa-solid fa-filter transition-transform duration-300 rotate-0 scale-100";
+                btn.className = "w-10 h-10 rounded-xl bg-cardDark text-textMuted flex items-center justify-center border border-white/5 tap-effect shrink-0 hover:text-white transition-all";
+                icon.className = "fa-solid fa-filter";
             }
             renderTasks();
         }
 
-        // Custom Select Functions
         function toggleCustomSelect(menuId) {
             event.stopPropagation();
-            const menus = document.querySelectorAll('.custom-select-options');
-            menus.forEach(m => {
-                if (m.id !== menuId) m.classList.remove('show');
+            document.querySelectorAll('.custom-select-options').forEach(m => {
+                if (m.id !== menuId) m.classList.add('hidden');
             });
             const menu = document.getElementById(menuId);
             const chevron = document.getElementById(menuId === 'category-options' ? 'category-chevron' : 'priority-chevron');
-            menu.classList.toggle('show');
-            if (menu.classList.contains('show')) {
+            menu.classList.toggle('hidden');
+            if (!menu.classList.contains('hidden')) {
                 chevron.classList.add('rotate-180');
             } else {
                 chevron.classList.remove('rotate-180');
@@ -1576,12 +1548,12 @@
             const label = document.getElementById(`selected-${type}`);
             label.innerHTML = html;
             label.setAttribute('data-value', value);
-            document.getElementById(`${type}-options`).classList.remove('show');
+            document.getElementById(`${type}-options`).classList.add('hidden');
             document.getElementById(`${type}-chevron`).classList.remove('rotate-180');
         }
 
         document.addEventListener('click', () => {
-            document.querySelectorAll('.custom-select-options').forEach(m => m.classList.remove('show'));
+            document.querySelectorAll('.custom-select-options').forEach(m => m.classList.add('hidden'));
             document.querySelectorAll('.fa-chevron-down').forEach(c => c.classList.remove('rotate-180'));
         });
 
@@ -1589,6 +1561,9 @@
             const modal = document.getElementById('add-task-modal');
             const overlay = document.getElementById('add-task-overlay');
             const content = document.getElementById('add-task-content');
+            const mainNav = document.getElementById('main-nav');
+
+            if (mainNav) mainNav.classList.add('opacity-0', 'pointer-events-none');
 
             modal.classList.remove('pointer-events-none');
             overlay.classList.remove('opacity-0');
@@ -1606,6 +1581,9 @@
             const modal = document.getElementById('add-task-modal');
             const overlay = document.getElementById('add-task-overlay');
             const content = document.getElementById('add-task-content');
+            const mainNav = document.getElementById('main-nav');
+
+            if (mainNav) mainNav.classList.remove('opacity-0', 'pointer-events-none');
 
             overlay.classList.remove('opacity-100', 'pointer-events-auto');
             overlay.classList.add('opacity-0');
@@ -1620,17 +1598,20 @@
 
         function addTask() {
             const input = document.getElementById('new-task-input');
-            const categorySelect = document.getElementById('new-task-category');
-            const prioritySelect = document.getElementById('new-task-priority');
+            const catLabel = document.getElementById('selected-category');
+            const prioLabel = document.getElementById('selected-priority');
             const text = input.value.trim();
 
             if (text === '') return;
 
+            const category = catLabel.getAttribute('data-value') || 'عام';
+            const priority = prioLabel.getAttribute('data-value') || 'طبيعي';
+
             const newTask = {
                 id: Date.now().toString(),
                 text: text,
-                category: categorySelect ? categorySelect.value : 'عام',
-                priority: prioritySelect ? prioritySelect.value : 'طبيعي',
+                category: category,
+                priority: priority,
                 completed: false,
                 date: selectedDateStr,
                 createdAt: new Date().toISOString()
@@ -1638,10 +1619,10 @@
 
             tasks.push(newTask);
             saveTasks();
-            if (input) input.value = '';
+            input.value = '';
             closeAddTaskModal();
             renderTasks();
-            navigate('tasks'); // الانتقال لصفحة المهام بعد إضافة المهمة
+            navigate('tasks');
         }
 
         function toggleTask(id) {
@@ -1650,14 +1631,10 @@
                 task.completed = !task.completed;
                 saveTasks();
                 renderTasks();
-
-                if (task.completed) {
-                    triggerConfetti();
-                }
+                if (task.completed) triggerConfetti();
             }
         }
 
-        // الحذف المخصص
         function deleteTask(id, event) {
             event.stopPropagation();
             taskToDeleteId = id;
@@ -1684,7 +1661,6 @@
                     if (!document.getElementById('view-archive').classList.contains('hidden')) {
                         renderArchiveList();
                     }
-                    taskToDeleteId = null;
                 }
                 closeDeleteConfirm();
             };
@@ -1713,21 +1689,20 @@
                 task.archived = true;
                 saveTasks();
                 renderTasks();
+                renderArchiveList();
             }
         }
 
         function renderTasks() {
             const list = document.getElementById('tasks-list');
+            if (!list) return;
             let dateTasks = getTasksForSelectedDate().filter(t => !t.archived);
 
-            // تطبيق الفلتر
             if (currentTaskFilter !== 'all') {
                 dateTasks = dateTasks.filter(t => t.priority === currentTaskFilter);
             }
 
             const emptyMsg = document.getElementById('empty-tasks-msg');
-
-            // تنظيف القائمة (باستثناء رسالة الفراغ)
             Array.from(list.children).forEach(child => {
                 if (child.id !== 'empty-tasks-msg') child.remove();
             });
@@ -1739,7 +1714,6 @@
                 emptyMsg.style.display = 'none';
             }
 
-            // ترتيب المهام (غير المكتملة أولاً)
             dateTasks.sort((a, b) => a.completed === b.completed ? 0 : a.completed ? 1 : -1);
 
             dateTasks.forEach(task => {
@@ -1747,26 +1721,26 @@
                 const prioColor = task.priority === 'مهم' ? 'border-r-4 border-r-red-500' : task.priority === 'متوسط' ? 'border-r-4 border-r-yellow-500' : 'border-r-4 border-r-transparent';
 
                 const taskEl = document.createElement('div');
-                taskEl.className = `bg-cardDark rounded-2xl p-4 flex justify-between items-center mb-3 border border-transparent transition-all duration-300 ${prioColor} ${task.completed ? 'opacity-60 border-l-borderDark border-t-borderDark border-b-borderDark' : 'hover:border-l-borderDark hover:border-t-borderDark hover:border-b-borderDark hover:bg-cardLighter'}`;
+                taskEl.className = `bg-cardDark rounded-2xl p-4 flex justify-between items-center border border-transparent transition-all duration-300 ${prioColor} ${task.completed ? 'opacity-60 border-white/[0.01]' : 'hover:border-white/[0.04] hover:bg-cardLighter'}`;
 
                 taskEl.innerHTML = `
-                    <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="toggleTask('${task.id}')">
-                        <div class="w-11 h-11 rounded-full ${task.completed ? 'bg-borderDark text-textMuted' : cat.bg + ' ' + cat.color} flex items-center justify-center shrink-0 transition-colors">
+                    <div class="flex items-center gap-3.5 flex-1 cursor-pointer" onclick="toggleTask('${task.id}')">
+                        <div class="w-10 h-10 rounded-xl ${task.completed ? 'bg-cardLighter text-textMuted' : cat.bg + ' ' + cat.color} flex items-center justify-center shrink-0 transition-colors">
                             <i class="fa-solid ${cat.icon}"></i>
                         </div>
                         <div class="flex-1">
-                            <h4 class="font-bold text-[15px] ${task.completed ? 'line-through text-textMuted' : 'text-white'} transition-all">${task.text}</h4>
-                            <div class="flex items-center gap-2 mt-0.5">
-                                <span class="text-[11px] text-textMuted">${task.category}</span>
-                                ${task.priority === 'مهم' ? '<span class="text-[10px] text-red-500 bg-red-500/10 px-2 rounded-full font-bold">مهم</span>' : task.priority === 'متوسط' ? '<span class="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 rounded-full font-bold">متوسط</span>' : ''}
+                            <h4 class="font-bold text-[14px] ${task.completed ? 'line-through text-textMuted' : 'text-white'} transition-all leading-tight">${task.text}</h4>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[10px] text-textMuted">${task.category}</span>
+                                ${task.priority === 'مهم' ? '<span class="text-[9px] text-red-500 bg-red-500/10 px-1.5 rounded font-bold">مهم</span>' : task.priority === 'متوسط' ? '<span class="text-[9px] text-yellow-500 bg-yellow-500/10 px-1.5 rounded font-bold">متوسط</span>' : ''}
                             </div>
                         </div>
                     </div>
                     
-                    <div class="flex items-center gap-3 shrink-0 ml-2">
-                        ${task.completed ? `<button onclick="archiveTask('${task.id}', event)" class="text-accentPurp/50 hover:text-accentPurp p-2 transition-colors" title="أرشفة المهمة"><i class="fa-solid fa-box-archive"></i></button>` : ''}
-                        <button onclick="deleteTask('${task.id}', event)" class="text-red-400/50 hover:text-red-400 p-2 transition-colors" title="حذف">
-                            <i class="fa-solid fa-trash-can"></i>
+                    <div class="flex items-center gap-2 shrink-0 ml-1">
+                        ${task.completed ? `<button onclick="archiveTask('${task.id}', event)" class="text-accentNeon/50 hover:text-accentNeon p-1.5 transition-colors" title="أرشفة"><i class="fa-solid fa-box-archive text-xs"></i></button>` : ''}
+                        <button onclick="deleteTask('${task.id}', event)" class="text-red-400/50 hover:text-red-400 p-1.5 transition-colors" title="حذف">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                         <div class="custom-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask('${task.id}')">
                             <i class="fa-solid fa-check"></i>
@@ -1778,138 +1752,148 @@
             });
         }
 
-        // تحديث إحصائيات الصفحة الرئيسية
+        // --- تحديث الإحصائيات الدائرية التراكمية في الواجهة ---
         function updateHomeStats() {
-            const todayTasks = tasks.filter(t => t.date === formatDate(new Date()));
-            const total = todayTasks.length;
-            const done = todayTasks.filter(t => t.completed).length;
-            const left = total - done;
+            const todayStr = formatDate(new Date());
+            const todayTasks = tasks.filter(t => t.date === todayStr && !t.archived);
+            const totalTasks = todayTasks.length;
+            const doneTasks = todayTasks.filter(t => t.completed).length;
 
-            document.getElementById('home-tasks-left').textContent = left;
-            document.getElementById('home-tasks-done').textContent = done;
+            const totalPlan = dailyPlan.length;
+            const donePlan = dailyPlan.filter(p => p.completed).length;
 
-            const percentage = total === 0 ? 0 : Math.round((done / total) * 100);
-            document.getElementById('home-progress-text').textContent = percentage + '%';
+            // حساب التقييمات اللفظية الفخمة مثل MyFitnessPal
+            const percentTasks = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
+            const percentPlan = totalPlan === 0 ? 0 : Math.round((donePlan / totalPlan) * 100);
 
-            // تحديث الدائرة
-            // المحيط للدائرة في الرئيسية (r=56) هو تقريباً 351.8
-            const circle = document.getElementById('home-progress-circle');
-            const circumference = 351.8;
-            const offset = circumference - (percentage / 100) * circumference;
-            circle.style.strokeDashoffset = offset;
+            // مؤشر التركيز: حددنا الهدف اليومي المرجعي مثلاً بـ 50 دقيقة تركيز
+            const focusGoal = 50;
+            const percentFocus = Math.min(100, Math.round((focusMinutesCount / focusGoal) * 100));
 
-            // تغيير لون الدائرة إذا اكتملت 100%
-            if (percentage === 100 && total > 0) {
-                circle.setAttribute('stroke', '#9B8AF4'); // بنفسجي
-            } else {
-                circle.setAttribute('stroke', '#88EDAA'); // أخضر
-            }
+            // تحديث البطاقة النصية اليمينية
+            document.getElementById('stat-lbl-tasks').textContent = `${doneTasks}/${totalTasks}`;
+            document.getElementById('stat-eval-tasks').textContent = percentTasks >= 75 ? 'ممتاز 🔥' : percentTasks >= 40 ? 'جيد 👍' : 'مقبول 🌱';
+
+            document.getElementById('stat-lbl-plan').textContent = `${donePlan}/${totalPlan}`;
+            document.getElementById('stat-eval-plan').textContent = percentPlan >= 75 ? 'مكتمل ✨' : percentPlan >= 40 ? 'نشط ⚡' : 'هادئ 💤';
+
+            document.getElementById('stat-lbl-focus').textContent = `${focusMinutesCount}/${focusGoal} د`;
+            document.getElementById('stat-eval-focus').textContent = percentFocus >= 75 ? 'مثالي 👑' : percentFocus >= 40 ? 'رائع ⭐' : 'بداية 🔋';
+
+            // النسبة العامة الإجمالية التراكمية
+            let overallCount = 0;
+            let sumPercentages = 0;
+            if (totalTasks > 0) { overallCount++; sumPercentages += percentTasks; }
+            if (totalPlan > 0) { overallCount++; sumPercentages += percentPlan; }
+            overallCount++; sumPercentages += percentFocus; // التركيز يحسب دائماً لتشجيع المستخدم
+
+            const overallPct = Math.round(sumPercentages / overallCount);
+            document.getElementById('home-overall-percentage').textContent = `${overallPct}%`;
+
+            // تحديث الحلقات المتداخلة SVG (Concentric stroke-dashoffset)
+            // الحلقة 1 (المهام): محيطها 364.4 (r=58)
+            const ringTasks = document.getElementById('ring-tasks');
+            ringTasks.style.strokeDashoffset = 364.4 - (percentTasks / 100) * 364.4;
+
+            // الحلقة 2 (المخطط): محيطها 289 (r=46)
+            const ringPlan = document.getElementById('ring-daily-plan');
+            ringPlan.style.strokeDashoffset = 289 - (percentPlan / 100) * 289;
+
+            // الحلقة 3 (التركيز): محيطها 213.6 (r=34)
+            const ringFocus = document.getElementById('ring-focus');
+            ringFocus.style.strokeDashoffset = 213.6 - (percentFocus / 100) * 213.6;
 
             initRandomTaskDisplay();
         }
 
-        // --- المهام العشوائية (Hourglass Widget) ---
+        // --- المقترحات العشوائية الذكية (Widget) ---
         let randomTaskInterval;
         let randomTaskTimeout;
-        const RANDOM_TASK_DURATION = 5000; // 5 ثواني
+        const RANDOM_TASK_DURATION = 5000;
 
         function initRandomTaskDisplay() {
             clearInterval(randomTaskInterval);
             clearTimeout(randomTaskTimeout);
 
-            const uncompletedTasks = tasks.filter(t => !t.completed);
+            const uncompletedTasks = tasks.filter(t => !t.completed && !t.archived);
             const contentDiv = document.getElementById('random-task-content');
             const hourglassBar = document.getElementById('hourglass-bar');
 
             if (!contentDiv || !hourglassBar) return;
 
-            if (!uncompletedTasks || uncompletedTasks.length === 0) {
-                contentDiv.innerHTML = `<span class="text-textMuted text-sm"><i class="fa-solid fa-mug-hot text-xl mb-2 block"></i>لا توجد مهام حالياً</span>`;
-                contentDiv.classList.remove('opacity-0', 'scale-95');
+            if (uncompletedTasks.length === 0) {
+                contentDiv.innerHTML = `<span class="text-textMuted text-xs flex items-center gap-2"><i class="fa-solid fa-mug-hot text-md text-accentNeon"></i> يومك ممتلئ ومنجز بشكل كامل!</span>`;
+                contentDiv.classList.remove('opacity-0', 'translate-y-1');
                 hourglassBar.style.transition = 'none';
                 hourglassBar.style.height = '0%';
                 return;
             }
 
             function showNextRandomTask() {
-                // إخفاء المهمة الحالية
                 contentDiv.classList.add('opacity-0', 'translate-y-1');
-
-                // إعادة تعبئة الساعة الرملية بسرعة
                 hourglassBar.style.transition = 'none';
                 hourglassBar.style.height = '100%';
 
                 randomTaskTimeout = setTimeout(() => {
-                    // اختيار مهمة عشوائية
                     const randomIndex = Math.floor(Math.random() * uncompletedTasks.length);
                     const task = uncompletedTasks[randomIndex];
                     const catInfo = categories[task.category] || categories['عام'];
 
-                    // شارة الأولوية
                     const priorityBadge = document.getElementById('random-priority-badge');
                     if (task.priority === 'مهم') {
                         priorityBadge.textContent = '🔴 مهم';
-                        priorityBadge.className = 'text-[8px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30';
+                        priorityBadge.className = 'text-[7px] font-bold px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/20';
                         priorityBadge.classList.remove('hidden');
                     } else if (task.priority === 'متوسط') {
                         priorityBadge.textContent = '🟡 متوسط';
-                        priorityBadge.className = 'text-[8px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
+                        priorityBadge.className = 'text-[7px] font-bold px-1.5 py-0.5 rounded bg-yellow-500/15 text-yellow-400 border border-yellow-500/20';
                         priorityBadge.classList.remove('hidden');
                     } else {
                         priorityBadge.className = 'hidden';
                     }
 
                     contentDiv.innerHTML = `
-                        <div class="w-8 h-8 rounded-xl ${catInfo.bg} ${catInfo.color} flex items-center justify-center shrink-0" style="box-shadow: 0 0 10px rgba(0,0,0,0.4)">
-                            <i class="fa-solid ${catInfo.icon} text-[13px]"></i>
+                        <div class="w-8 h-8 rounded-xl ${catInfo.bg} ${catInfo.color} flex items-center justify-center shrink-0">
+                            <i class="fa-solid ${catInfo.icon} text-xs"></i>
                         </div>
                         <div class="flex flex-col min-w-0">
-                            <span class="text-white font-semibold text-[12px] leading-tight line-clamp-2">${task.text}</span>
-                            <span class="text-white/30 text-[9px] mt-0.5 font-medium">${task.category}</span>
+                            <span class="text-white font-bold text-xs leading-tight line-clamp-1">${task.text}</span>
+                            <span class="text-textMuted text-[10px] mt-0.5">${task.category} • ${task.date}</span>
                         </div>
                     `;
 
-                    // تغيير لون الساعة الرملية للون التصنيف
-                    hourglassBar.className = `w-full rounded-xl transition-all ${catInfo.color.replace('text-', 'bg-')}`;
-
-                    // إظهار المهمة
                     contentDiv.classList.remove('opacity-0', 'translate-y-1');
 
-                    // تشغيل انيميشن الساعة الرملية
                     setTimeout(() => {
                         hourglassBar.style.transition = `height ${RANDOM_TASK_DURATION}ms linear`;
                         hourglassBar.style.height = '0%';
                     }, 50);
 
-                }, 400); // الانتظار حتى تنتهي حركة الإخفاء
+                }, 400);
             }
 
             showNextRandomTask();
-            randomTaskInterval = setInterval(showNextRandomTask, RANDOM_TASK_DURATION + 500);
+            randomTaskInterval = setInterval(showNextRandomTask, RANDOM_TASK_DURATION + 600);
         }
 
-        // --- المؤقت (Pomodoro) ---
+        // --- فضاء التركيز والمؤقت ---
         function updateTimerDisplay() {
             const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
             const seconds = (timeLeft % 60).toString().padStart(2, '0');
             document.getElementById('timer-display').textContent = `${minutes}:${seconds}`;
 
-            // تحديث الشريط الدائري
             const progress = timeLeft / timerDuration;
             const offset = TIMER_CIRCUMFERENCE - (progress * TIMER_CIRCUMFERENCE);
             document.getElementById('timer-ring').style.strokeDashoffset = offset;
         }
 
         function setTimerDuration(mins) {
-            if (isTimerRunning) return; // لا تغير الوقت أثناء التشغيل
+            if (isTimerRunning) return;
             timerDuration = mins * 60;
             timeLeft = timerDuration;
-            isWorkMode = (mins >= 25);
-            document.getElementById('timer-mode-text').textContent = isWorkMode ? 'وقت التركيز' : 'وقت الاستراحة';
-
-            // تغيير لون حلقة المؤقت بناء على الوضع
-            document.getElementById('timer-ring').setAttribute('stroke', isWorkMode ? '#9B8AF4' : '#88EDAA');
-
+            isWorkMode = (mins >= 15);
+            document.getElementById('timer-mode-text').textContent = isWorkMode ? 'وقت التركيز والعمل' : 'وقت الاستراحة والهدوء';
+            document.getElementById('timer-ring').setAttribute('stroke', isWorkMode ? '#C0F82E' : '#FF9F43');
             updateTimerDisplay();
         }
 
@@ -1919,20 +1903,20 @@
             const startBtn = document.getElementById('btn-start-timer');
 
             if (isTimerRunning) {
-                // إيقاف
                 clearInterval(timerInterval);
                 isTimerRunning = false;
-                btnText.textContent = 'استئناف';
+                btnText.textContent = 'استئناف الجلسة';
                 btnIcon.className = 'fa-solid fa-play';
                 startBtn.classList.remove('bg-red-500');
-                startBtn.classList.add('bg-accentPurp');
+                startBtn.classList.add('bg-accentNeon');
+                startBtn.classList.add('shadow-neon-btn');
             } else {
-                // تشغيل
                 isTimerRunning = true;
                 btnText.textContent = 'إيقاف مؤقت';
                 btnIcon.className = 'fa-solid fa-pause';
-                startBtn.classList.remove('bg-accentPurp');
-                startBtn.classList.add('bg-red-500'); // لون أحمر للإيقاف
+                startBtn.classList.remove('bg-accentNeon');
+                startBtn.classList.remove('shadow-neon-btn');
+                startBtn.classList.add('bg-red-500');
 
                 timerInterval = setInterval(() => {
                     timeLeft--;
@@ -1944,17 +1928,22 @@
                         playAlarm();
                         triggerConfetti();
 
-                        // تبديل تلقائي
                         if (isWorkMode) {
-                            setTimerDuration(5); // استراحة 5 دقائق
+                            // إضافة دقائق التركيز
+                            const minsEarned = Math.round(timerDuration / 60);
+                            focusMinutesCount += minsEarned;
+                            localStorage.setItem('app_focus_minutes_count', focusMinutesCount);
+                            updateHomeStats();
+                            setTimerDuration(5); // تحويل للاستراحة
                         } else {
-                            setTimerDuration(25); // عودة للعمل
+                            setTimerDuration(25); // العودة للعمل
                         }
 
-                        btnText.textContent = 'ابدأ';
+                        btnText.textContent = 'ابدأ الجلسة';
                         btnIcon.className = 'fa-solid fa-play';
                         startBtn.classList.remove('bg-red-500');
-                        startBtn.classList.add('bg-accentPurp');
+                        startBtn.classList.add('bg-accentNeon');
+                        startBtn.classList.add('shadow-neon-btn');
                     }
                 }, 1000);
             }
@@ -1969,10 +1958,11 @@
             const btnIcon = document.getElementById('timer-icon');
             const startBtn = document.getElementById('btn-start-timer');
 
-            btnText.textContent = 'ابدأ';
+            btnText.textContent = 'ابدأ الجلسة';
             btnIcon.className = 'fa-solid fa-play';
             startBtn.classList.remove('bg-red-500');
-            startBtn.classList.add('bg-accentPurp');
+            startBtn.classList.add('bg-accentNeon');
+            startBtn.classList.add('shadow-neon-btn');
 
             updateTimerDisplay();
         }
@@ -1987,64 +1977,55 @@
         }
 
         function playAlarm() {
-            // صوت تنبيه بسيط باستخدام AudioContext (يجنبنا الحاجة لملف صوتي خارجي)
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(800, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.5);
-                osc.connect(ctx.destination);
+                osc.frequency.setValueAtTime(600, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.6);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
                 osc.start();
-                osc.stop(ctx.currentTime + 0.5);
+                osc.stop(ctx.currentTime + 0.6);
             } catch (e) {
-                console.log('Audio not supported');
+                console.log('Audio error');
             }
         }
 
-        // --- المؤثرات (Confetti) ---
+        // --- مؤثرات الاحتفال (Confetti) ---
         function triggerConfetti() {
-            var duration = 2000;
-            var end = Date.now() + duration;
-
-            (function frame() {
-                confetti({
-                    particleCount: 3,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: ['#9B8AF4', '#88EDAA', '#EDB188']
-                });
-                confetti({
-                    particleCount: 3,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: ['#9B8AF4', '#88EDAA', '#EDB188']
-                });
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
+            confetti({
+                particleCount: 60,
+                spread: 70,
+                origin: { y: 0.5 },
+                colors: ['#C0F82E', '#FF9F43', '#2DCEE3'],
+                disableForReducedMotion: true
+            });
         }
 
-        // --- الإحصائيات (Chart.js) ---
-        Chart.defaults.color = '#9CA3AF';
+        // --- المخططات البيانية نيون الفخمة (Chart.js) ---
+        Chart.defaults.color = '#8E9296';
         Chart.defaults.font.family = "'Tajawal', sans-serif";
 
         function initCharts() {
             const ctxWeekly = document.getElementById('weeklyChart').getContext('2d');
+
+            // إنشاء تدرج لوني للمستطيلات (Neon Gradient)
+            const weeklyGrad = ctxWeekly.createLinearGradient(0, 0, 0, 150);
+            weeklyGrad.addColorStop(0, 'rgba(192, 248, 46, 0.95)');
+            weeklyGrad.addColorStop(1, 'rgba(192, 248, 46, 0.08)');
+
             weeklyChartInstance = new Chart(ctxWeekly, {
                 type: 'bar',
                 data: {
-                    labels: ['أحد', 'إثن', 'ثلا', 'أرب', 'خمي', 'جمع', 'سبت'],
+                    labels: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
                     datasets: [{
                         label: 'المهام المنجزة',
                         data: [0, 0, 0, 0, 0, 0, 0],
-                        backgroundColor: '#9B8AF4',
-                        borderRadius: 20,
-                        barThickness: 8
+                        backgroundColor: weeklyGrad,
+                        borderRadius: 12,
+                        barThickness: 10
                     }]
                 },
                 options: {
@@ -2064,16 +2045,16 @@
                 data: {
                     labels: ['عمل', 'شخصي', 'دراسة', 'عام'],
                     datasets: [{
-                        data: [1, 1, 1, 1], // بيانات افتراضية لمنع ظهور الدائرة فارغة
-                        backgroundColor: ['#9B8AF4', '#88EDAA', '#EDB188', '#60A5FA'],
+                        data: [1, 1, 1, 1],
+                        backgroundColor: ['#C0F82E', '#FF9F43', '#2DCEE3', '#3B82F6'],
                         borderWidth: 0,
-                        hoverOffset: 4
+                        hoverOffset: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '80%',
+                    cutout: '76%',
                     plugins: {
                         legend: { display: false },
                         tooltip: { enabled: true }
@@ -2090,23 +2071,22 @@
             document.getElementById('stat-completion-rate').textContent = totalTasks ? Math.round((completedTasks / totalTasks) * 100) + '%' : '0%';
             document.getElementById('stat-total-tasks').textContent = totalTasks;
 
-            // حساب بيانات الأسبوع الحالي
+            // أداء الأسبوع
             let weekData = [0, 0, 0, 0, 0, 0, 0];
             let curr = new Date();
-            let firstDay = new Date(curr.setDate(curr.getDate() - curr.getDay())); // الأحد
+            let firstDay = new Date(curr.setDate(curr.getDate() - curr.getDay())); // الأحد المرجعي
 
             for (let i = 0; i < 7; i++) {
                 let d = new Date(firstDay);
                 d.setDate(d.getDate() + i);
                 let dString = formatDate(d);
-                let count = tasks.filter(t => t.date === dString && t.completed).length;
-                weekData[i] = count;
+                weekData[i] = tasks.filter(t => t.date === dString && t.completed).length;
             }
 
             weeklyChartInstance.data.datasets[0].data = weekData;
             weeklyChartInstance.update();
 
-            // حساب بيانات التصنيفات
+            // توزيع التصنيفات
             let catCounts = { 'عمل': 0, 'شخصي': 0, 'دراسة': 0, 'عام': 0 };
             tasks.forEach(t => {
                 if (catCounts[t.category] !== undefined) {
@@ -2118,19 +2098,17 @@
 
             const catDataArray = [catCounts['عمل'], catCounts['شخصي'], catCounts['دراسة'], catCounts['عام']];
 
-            // إذا كانت كل البيانات 0، نضع قيم وهمية لنرسم دائرة رمادية
             if (catDataArray.every(v => v === 0)) {
                 categoryChartInstance.data.datasets[0].data = [1];
-                categoryChartInstance.data.datasets[0].backgroundColor = ['#333'];
-                document.getElementById('stat-total-tasks').textContent = '0';
+                categoryChartInstance.data.datasets[0].backgroundColor = ['#1C1E21'];
             } else {
                 categoryChartInstance.data.datasets[0].data = catDataArray;
-                categoryChartInstance.data.datasets[0].backgroundColor = ['#9B8AF4', '#88EDAA', '#EDB188', '#60A5FA'];
+                categoryChartInstance.data.datasets[0].backgroundColor = ['#C0F82E', '#FF9F43', '#2DCEE3', '#3B82F6'];
             }
             categoryChartInstance.update();
         }
 
-        // --- الإعدادات ---
+        // --- الإعدادات وحفظ الملفات ---
         function openSettings() {
             const modal = document.getElementById('settings-modal');
             const content = document.getElementById('settings-content');
@@ -2150,18 +2128,23 @@
         }
 
         function clearAllData() {
-            if (confirm('هل أنت متأكد من مسح جميع البيانات؟ سيتم إعادة تشغيل التطبيق بالكامل.')) {
-                localStorage.removeItem('app_tasks');
-                localStorage.removeItem('app_notes');
-                localStorage.removeItem('app_user_data');
+            if (confirm('هل أنت متأكد من مسح جميع البيانات نهائياً؟ سيتم إعادة تشغيل التطبيق بالكامل.')) {
+                localStorage.clear();
                 window.location.reload();
             }
         }
 
         function exportData() {
-            const dataStr = JSON.stringify(tasks, null, 2);
+            const backup = {
+                tasks: tasks,
+                notes: notes,
+                userData: userData,
+                dailyPlan: dailyPlan,
+                focusMinutesCount: focusMinutesCount
+            };
+            const dataStr = JSON.stringify(backup, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-            const exportFileDefaultName = 'my_tasks_backup.json';
+            const exportFileDefaultName = 'mounjez_secure_backup.json';
 
             let linkElement = document.createElement('a');
             linkElement.setAttribute('href', dataUri);
@@ -2175,23 +2158,32 @@
             const reader = new FileReader();
             reader.onload = function (e) {
                 try {
-                    const importedTasks = JSON.parse(e.target.result);
-                    if (Array.isArray(importedTasks)) {
-                        tasks = importedTasks;
-                        saveTasks();
-                        renderTasks();
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.tasks || imported.userData) {
+                        tasks = imported.tasks || [];
+                        notes = imported.notes || [];
+                        userData = imported.userData || null;
+                        dailyPlan = imported.dailyPlan || [];
+                        focusMinutesCount = imported.focusMinutesCount || 0;
+
+                        localStorage.setItem('app_tasks', JSON.stringify(tasks));
+                        localStorage.setItem('app_notes', JSON.stringify(notes));
+                        localStorage.setItem('app_user_data', JSON.stringify(userData));
+                        localStorage.setItem('app_daily_plan', JSON.stringify(dailyPlan));
+                        localStorage.setItem('app_focus_minutes_count', focusMinutesCount);
+
                         closeSettings();
-                        alert("تم استيراد البيانات بنجاح!");
-                        navigate('home');
+                        alert("تمت استعادة كافة البيانات بنجاح تام!");
+                        window.location.reload();
                     }
                 } catch (err) {
-                    alert("خطأ في قراءة الملف. تأكد من أنه ملف JSON صحيح.");
+                    alert("عذراً، الملف غير صالح للتطبيق.");
                 }
             };
             reader.readAsText(file);
         }
 
-        // --- المفكرات (Notes) ---
+        // --- المفكرة وسجل الأفكار ---
         let currentEditingNoteId = null;
 
         function saveNotes() {
@@ -2201,8 +2193,8 @@
         function renderNotesList() {
             const list = document.getElementById('notes-list');
             const emptyMsg = document.getElementById('empty-notes-msg');
+            if (!list) return;
 
-            // تنظيف القائمة
             Array.from(list.children).forEach(child => {
                 if (child.id !== 'empty-notes-msg') child.remove();
             });
@@ -2216,22 +2208,22 @@
 
             notes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)).forEach(note => {
                 const noteEl = document.createElement('div');
-                noteEl.className = 'bg-cardDark rounded-2xl p-4 border border-transparent hover:border-borderDark hover:bg-cardLighter transition-all duration-300 cursor-pointer tap-effect';
+                noteEl.className = 'bg-cardDark rounded-[20px] p-5 border border-transparent hover:border-white/[0.04] hover:bg-cardLighter transition-all duration-300 cursor-pointer tap-effect';
                 noteEl.onclick = () => openNoteEditor(note.id);
 
-                const previewText = note.content.length > 60 ? note.content.substring(0, 60) + '...' : note.content;
+                const previewText = note.content.length > 55 ? note.content.substring(0, 55) + '...' : note.content;
                 const dateOptions = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
                 const dateStr = new Date(note.updatedAt).toLocaleDateString('ar-EG', dateOptions);
 
                 noteEl.innerHTML = `
                     <div class="flex justify-between items-start mb-2">
-                        <h4 class="font-bold text-[16px] text-white line-clamp-1">${note.title || 'مذكرة بدون عنوان'}</h4>
-                        <button onclick="deleteNote('${note.id}', event)" class="text-red-400/50 hover:text-red-400 p-1 transition-colors">
-                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        <h4 class="font-extrabold text-[15px] text-white line-clamp-1">${note.title || 'ملاحظة بلا عنوان'}</h4>
+                        <button onclick="deleteNote('${note.id}', event)" class="text-red-400/50 hover:text-red-400 p-1.5 transition-colors">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                     </div>
-                    <p class="text-sm text-textMuted mb-3 line-clamp-2 leading-relaxed">${previewText || 'لا يوجد نص...'}</p>
-                    <div class="text-[10px] text-white/40 flex items-center gap-1">
+                    <p class="text-xs text-textMuted mb-3.5 line-clamp-2 leading-relaxed">${previewText || 'اضغط للتعديل والتسجيل...'}</p>
+                    <div class="text-[9px] text-white/30 flex items-center gap-1 font-numbers">
                         <i class="fa-regular fa-clock"></i> ${dateStr}
                     </div>
                 `;
@@ -2308,17 +2300,18 @@
 
         function deleteNote(id, event) {
             event.stopPropagation();
-            if (confirm('هل أنت متأكد من حذف هذه المذكرة؟')) {
+            if (confirm('هل أنت متأكد من رغبتك في حذف هذه الملاحظة نهائياً؟')) {
                 notes = notes.filter(n => n.id !== id);
                 saveNotes();
                 renderNotesList();
             }
         }
 
-        // --- الأرشيف (Archive) ---
+        // --- سجل الأرشيف ---
         function renderArchiveList() {
             const list = document.getElementById('archive-list');
             const emptyMsg = document.getElementById('empty-archive-msg');
+            if (!list) return;
             const archivedTasks = tasks.filter(t => t.archived);
 
             Array.from(list.children).forEach(child => {
@@ -2335,24 +2328,24 @@
             archivedTasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).forEach(task => {
                 const cat = categories[task.category] || categories['عام'];
                 const taskEl = document.createElement('div');
-                taskEl.className = 'bg-cardDark rounded-2xl p-4 flex justify-between items-center mb-3 border border-borderDark opacity-80';
+                taskEl.className = 'bg-cardDark rounded-2xl p-4 flex justify-between items-center border border-white/[0.01] opacity-75';
 
                 taskEl.innerHTML = `
-                    <div class="flex items-center gap-4 flex-1">
-                        <div class="w-11 h-11 rounded-full bg-borderDark text-textMuted flex items-center justify-center shrink-0">
+                    <div class="flex items-center gap-3.5 flex-1">
+                        <div class="w-10 h-10 rounded-xl bg-cardLighter text-textMuted flex items-center justify-center shrink-0">
                             <i class="fa-solid ${cat.icon}"></i>
                         </div>
                         <div class="flex-1">
-                            <h4 class="font-bold text-[15px] text-textMuted line-through">${task.text}</h4>
-                            <div class="flex items-center gap-2 mt-0.5 text-[11px] text-textMuted">
+                            <h4 class="font-bold text-[14px] text-textMuted line-through leading-tight">${task.text}</h4>
+                            <div class="flex items-center gap-2 mt-1 text-[10px] text-textMuted">
                                 <span>${task.category}</span>
                                 <span>•</span>
-                                <span>${task.date}</span>
+                                <span class="font-numbers">${task.date}</span>
                             </div>
                         </div>
                     </div>
-                    <button onclick="unarchiveTask('${task.id}', event)" class="text-accentPurp/50 hover:text-accentPurp p-2 transition-colors" title="استعادة">
-                        <i class="fa-solid fa-box-open"></i>
+                    <button onclick="unarchiveTask('${task.id}', event)" class="text-accentNeon/50 hover:text-accentNeon p-2 transition-colors" title="استعادة">
+                        <i class="fa-solid fa-box-open text-xs"></i>
                     </button>
                 `;
                 list.appendChild(taskEl);
@@ -2371,63 +2364,51 @@
         }
 
         function clearArchive() {
-            if (confirm('هل أنت متأكد من مسح جميع المهام في الأرشيف بشكل نهائي؟')) {
+            if (confirm('هل أنت متأكد من مسح كافة المهام المؤرشفة بالكامل؟')) {
                 tasks = tasks.filter(t => !t.archived);
                 saveTasks();
                 renderArchiveList();
             }
         }
 
-        // بدء التشغيل
+        // --- بدء وتشغيل المؤثرات التحضيرية لشاشة البداية ---
         window.onload = () => {
-            // تجهيز التطبيق في الخلفية
             init();
 
-            // أنميشن شاشة البداية (Splash Screen)
+            // أنميشن التحميل الأنيق لبارات شاشة اللودينج
             setTimeout(() => {
                 const box1 = document.getElementById('splash-box-1');
                 const check1 = document.getElementById('splash-check-1');
                 const line1 = document.getElementById('splash-line-1');
+                const status = document.getElementById('splash-status-text');
                 if (box1) {
                     box1.classList.remove('border-textMuted');
-                    box1.classList.add('bg-accentPurp', 'border-accentPurp');
+                    box1.classList.add('bg-accentNeon', 'border-accentNeon');
                     check1.classList.remove('opacity-0', 'scale-0');
                     check1.classList.add('opacity-100', 'scale-100');
                     line1.style.width = '100%';
-                    line1.classList.add('bg-accentPurp');
+                    line1.classList.add('bg-accentNeon');
                     line1.classList.remove('bg-textMuted');
+                    status.textContent = "جاري تهيئة واجهات العرض الفاخرة...";
                 }
-            }, 400);
+            }, 500);
 
             setTimeout(() => {
                 const box2 = document.getElementById('splash-box-2');
                 const check2 = document.getElementById('splash-check-2');
                 const line2 = document.getElementById('splash-line-2');
+                const status = document.getElementById('splash-status-text');
                 if (box2) {
                     box2.classList.remove('border-textMuted');
-                    box2.classList.add('bg-accentGreen', 'border-accentGreen');
+                    box2.classList.add('bg-[#FF9F43]', 'border-[#FF9F43]');
                     check2.classList.remove('opacity-0', 'scale-0');
                     check2.classList.add('opacity-100', 'scale-100');
                     line2.style.width = '100%';
-                    line2.classList.add('bg-accentGreen');
+                    line2.classList.add('bg-[#FF9F43]');
                     line2.classList.remove('bg-textMuted');
+                    status.textContent = "الربط مع محرك التنبيهات ونظام بومودورو...";
                 }
-            }, 900);
-
-            setTimeout(() => {
-                const box3 = document.getElementById('splash-box-3');
-                const check3 = document.getElementById('splash-check-3');
-                const line3 = document.getElementById('splash-line-3');
-                if (box3) {
-                    box3.classList.remove('border-textMuted');
-                    box3.classList.add('bg-accentOrange', 'border-accentOrange');
-                    check3.classList.remove('opacity-0', 'scale-0');
-                    check3.classList.add('opacity-100', 'scale-100');
-                    line3.style.width = '100%';
-                    line3.classList.add('bg-accentOrange');
-                    line3.classList.remove('bg-textMuted');
-                }
-            }, 1400);
+            }, 1200);
 
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
@@ -2435,16 +2416,16 @@
 
                 if (splash) {
                     splash.style.opacity = '0';
-                    splash.style.transform = 'scale(1.2)';
+                    splash.style.transform = 'scale(1.15)';
 
                     appContainer.style.opacity = '1';
                     appContainer.style.transform = 'scale(1)';
 
                     setTimeout(() => {
                         splash.remove();
-                    }, 700);
+                    }, 600);
                 }
-            }, 2100);
+            }, 2000);
         };
     </script>
 </body>
